@@ -1,0 +1,107 @@
+[workspace]
+members = ["crates/*"]
+resolver = "2"
+
+[workspace.package]
+version = "0.0.0"
+authors = ["Ifiok Jr. <ifiokotung@gmail.com>"]
+edition = "2021"
+homepage = "https://edgedb.com"
+license = "Unlicense"
+repository = "https://github.com/ifiokjr/edgedb_generator"
+rust-version = "1.71.0"
+
+[workspace.lints.rust]
+# Group lints
+rust_2021_compatibility = { level = "warn", priority = -1 }
+rust_2024_compatibility = { level = "warn", priority = -1 }
+
+# Individual lints
+unsafe_code = "deny"
+unstable_features = "deny"
+unused_extern_crates = "warn"
+unused_import_braces = "warn"
+unused_lifetimes = "warn"
+unused_macro_rules = "warn"
+unused_qualifications = "warn"
+variant_size_differences = "warn"
+
+[workspace.lints.clippy]
+# Group lints
+complexity = { level = "warn", priority = -1 }
+correctness = { level = "deny", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+perf = { level = "warn", priority = -1 }
+style = { level = "warn", priority = -1 }
+suspicious = { level = "warn", priority = -1 }
+
+# Individual lints
+blocks_in_conditions = "allow"
+cargo_common_metadata = "allow"
+cast_possible_truncation = "allow"
+cast_possible_wrap = "allow"
+cast_precision_loss = "allow"
+cast_sign_loss = "allow"
+expl_impl_clone_on_copy = "allow"
+items_after_statements = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+module_name_repetitions = "allow"
+must_use_candidate = "allow"
+no_effect_underscore_binding = "allow"
+tabs-in-doc-comments = "allow"
+too_many_lines = "allow"
+wildcard_dependencies = "deny"
+wildcard_imports = "allow"
+
+[workspace.dependencies]
+anyhow = "1"
+assert2 = "0.3"
+base64 = "0.22"
+bitflags = "2"
+bytes = "1"
+check_keyword = "0.3"
+chrono = "0.4"
+chrono-humanize = "0.2"
+clap = "4"
+derive_more = "1.0.0-beta"
+document-features = "0.2"
+dotenvy = "0.15"
+edgedb-derive = "0.5"
+edgedb-errors = "0.4"
+edgedb-protocol = "0.6"
+edgedb-tokio = "0.5.1"
+futures = "0.3"
+futures-timer = "3"
+futures-util = "0.3"
+heck = "0.5"
+insta = "1"
+js-sys = "0.3"
+lazy_static = "1"
+log = "0.4"
+proc-macro2 = "1"
+quote = "1"
+rand = "0.8"
+retrier = "0.1"
+rstest = "0.22"
+serde = "1"
+serde_bytes = "0.11"
+serde_derive = "1"
+serde_json = "1"
+serde_with = "3"
+strum = "0.26"
+syn = "2"
+test-log = "0.2"
+thiserror = "1"
+tokio = "1"
+tracing = "0.1"
+typed-builder = "0.19"
+
+# crates
+edgedb_generator = { path = "./crates/edgedb_generator", version = "0.0.0" }
+
+[workspace.metadata.bin]
+cargo-insta = { version = "1.39.0" }
+cargo-llvm-cov = { version = "0.6.10" }
+cargo-mutants = { version = "24.7.0" }
+cargo-nextest = { version = "0.9.72" }
