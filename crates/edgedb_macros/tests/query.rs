@@ -25,11 +25,11 @@ pub async fn simple_query() -> anyhow::Result<()> {
 }
 
 #[tokio::test]
-pub async fn empty_query() -> anyhow::Result<()> {
+pub async fn empty_set_query() -> anyhow::Result<()> {
 	let client = create_client().await?;
 	let output = empty::query(&client).await?;
 
-	edgedb_query!(empty, r#"select <uuid>"100""#);
+	edgedb_query!(empty, r#"select <int64>{}"#);
 
 	insta::assert_ron_snapshot!(output, @"");
 

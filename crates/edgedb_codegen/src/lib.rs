@@ -98,10 +98,27 @@ pub fn generate_rust_from_query(
 	let kebab_name: syn::Ident = syn::parse_str(&name.to_kebab_case())?;
 	let input = descriptor.input.decode()?;
 	let output = descriptor.output.decode()?;
-	let mut tokens: Vec<TokenStream> = vec![];
+	let mut tokens: TokenStream = TokenStream::new();
 
-	explore_descriptor(input.root(), &input, INPUT_NAME, true, &mut tokens)?;
-	explore_descriptor(output.root(), &output, OUTPUT_NAME, false, &mut tokens)?;
+	explore_descriptor(
+		ExploreDescriptorProps::builder()
+			.typedesc(&input)
+			.is_input()
+			.is_root()
+			.descriptor(input.root())
+			.root_name(INPUT_NAME)
+			.build(),
+		&mut tokens,
+	)?;
+	explore_descriptor(
+		ExploreDescriptorProps::builder()
+			.typedesc(&output)
+			.is_root()
+			.descriptor(output.root())
+			.root_name(OUTPUT_NAME)
+			.build(),
+		&mut tokens,
+	)?;
 
 	let query_method = match descriptor.result_cardinality {
 		Cardinality::NoResult | Cardinality::AtMostOne => quote!(query_single),
@@ -128,7 +145,7 @@ pub fn generate_rust_from_query(
 				#client_ident.#query_method(#(#args),*).await
 			}
 
-			#(#tokens)*
+			#tokens
 		}
 	};
 
@@ -152,51 +169,46 @@ fn wrap_token_with_cardinality(
 
 #[derive(Debug, TypedBuilder)]
 struct ExploreDescriptorProps<'a> {
-	tokens: &'a mut TokenStream,
 	typedesc: &'a Typedesc,
+	#[builder(setter(strip_bool(fallback = is_input_bool)))]
 	is_input: bool,
-	#[builder(setter(strip_bool))]
+	#[builder(setter(strip_bool(fallback = is_root_bool)))]
 	is_root: bool,
-	maybe_descriptor: Option<&'a Descriptor>,
+	descriptor: Option<&'a Descriptor>,
 	root_name: &'a str,
 }
 
-type PartialExploreDescriptorProps<'a> = ExploreDescriptorPropsBuilder<
-	'a,
-	((&'a mut TokenStream,), (&'a Typedesc,), (bool,), (), (), ()),
->;
+type PartialExploreDescriptorProps<'a> =
+	ExploreDescriptorPropsBuilder<'a, ((&'a Typedesc,), (bool,), (bool,), (), ())>;
 
 impl<'a> ExploreDescriptorProps<'a> {
 	fn into_props(self) -> PartialExploreDescriptorProps<'a> {
 		let Self {
-			tokens,
-			typedesc,
-			is_input,
-			..
+			typedesc, is_input, ..
 		} = self;
 
 		Self::builder()
-			.tokens(tokens)
 			.typedesc(typedesc)
-			.is_input(is_input)
+			.is_input_bool(is_input)
+			.is_root_bool(false)
 	}
 }
 
-pub fn explore_descriptor(
-	maybe_descriptor: Option<&Descriptor>,
-	typedesc: &Typedesc,
-	root_name: &str,
-	is_input: bool,
-	tokens: &mut Vec<TokenStream>,
+fn explore_descriptor(
+	props @ ExploreDescriptorProps {
+		typedesc,
+		is_input,
+		is_root,
+		descriptor,
+		root_name,
+	}: ExploreDescriptorProps,
+	tokens: &mut TokenStream,
 ) -> Result<Option<TokenStream>> {
-	// TODO this could lead to false positives for a sub field named `output` or
-	// `input`
-	let is_root = root_name == OUTPUT_NAME || root_name == INPUT_NAME;
 	let root_ident = format_ident!("{root_name}");
 
-	let Some(descriptor) = maybe_descriptor else {
+	let Some(descriptor) = descriptor else {
 		if is_root {
-			tokens.push(quote!(type #root_ident = ();));
+			tokens.extend(quote!(type #root_ident = ();));
 		}
 
 		return Ok(None);
@@ -206,28 +218,28 @@ pub fn explore_descriptor(
 		Descriptor::Set(set) => {
 			let set_descriptor = typedesc.get(set.type_pos).ok();
 			let sub_root_name = format!("{root_name}Set");
-			let result =
-				explore_descriptor(set_descriptor, typedesc, &sub_root_name, is_input, tokens)?
-					.map(|result| quote!(Vec<#result>));
+			let props = props
+				.into_props()
+				.descriptor(set_descriptor)
+				.root_name(&sub_root_name)
+				.build();
+			let result = explore_descriptor(props, tokens)?.map(|result| quote!(Vec<#result>));
 
 			if is_root {
-				tokens.push(quote!(type #root_ident = #result;));
+				tokens.extend(quote!(type #root_ident = #result;));
 				Ok(Some(quote!(#root_ident)))
 			} else {
 				Ok(result)
 			}
 		}
 		Descriptor::ObjectShape(object) => {
-			let mut object_tokens = vec![];
 			let result = explore_object_shape_descriptor(
 				StructElement::from_shape(&object.elements),
 				typedesc,
 				root_name,
 				is_input,
-				&mut object_tokens,
+				tokens,
 			)?;
-
-			tokens.push(object_tokens.into_iter().collect());
 
 			Ok(result)
 		}
@@ -235,20 +247,20 @@ pub fn explore_descriptor(
 			let result = uuid_to_token_name(&base_scalar.id);
 
 			if is_root {
-				tokens.push(quote!(type #root_ident = #result;));
+				tokens.extend(quote!(type #root_ident = #result;));
 				Ok(Some(quote!(#root_ident)))
 			} else {
 				Ok(Some(result))
 			}
 		}
 		Descriptor::Scalar(scalar) => {
-			explore_descriptor(
-				typedesc.get(scalar.base_type_pos).ok(),
-				typedesc,
-				root_name,
-				is_input,
-				tokens,
-			)
+			let props = props
+				.into_props()
+				.descriptor(typedesc.get(scalar.base_type_pos).ok())
+				.root_name(root_name)
+				.build();
+
+			explore_descriptor(props, tokens)
 		}
 		Descriptor::Tuple(tuple) => {
 			let mut tuple_tokens = Punctuated::<_, Token![,]>::new();
@@ -256,10 +268,12 @@ pub fn explore_descriptor(
 			for (index, element) in tuple.element_types.iter().enumerate() {
 				let sub_root_name = format!("{root_name}{index}");
 				let result = explore_descriptor(
-					typedesc.get(*element).ok(),
-					typedesc,
-					&sub_root_name,
-					is_input,
+					ExploreDescriptorProps::builder()
+						.typedesc(typedesc)
+						.is_input_bool(is_input)
+						.descriptor(typedesc.get(*element).ok())
+						.root_name(&sub_root_name)
+						.build(),
 					tokens,
 				)?;
 
@@ -269,34 +283,35 @@ pub fn explore_descriptor(
 			let result = quote!((#tuple_tokens));
 
 			if is_root {
-				tokens.push(quote!(type #root_ident = #result;));
+				tokens.extend(quote!(type #root_ident = #result;));
 				Ok(Some(quote!(#root_ident)))
 			} else {
 				Ok(Some(result))
 			}
 		}
 		Descriptor::NamedTuple(named_tuple) => {
-			let mut object_tokens = vec![];
 			let result = explore_object_shape_descriptor(
 				StructElement::from_named_tuple(&named_tuple.elements),
 				typedesc,
 				root_name,
 				is_input,
-				&mut object_tokens,
+				tokens,
 			)?;
-
-			tokens.push(object_tokens.into_iter().collect());
 
 			Ok(result)
 		}
 		Descriptor::Array(array) => {
 			let array_descriptor = typedesc.get(array.type_pos).ok();
-			let result =
-				explore_descriptor(array_descriptor, typedesc, root_name, is_input, tokens)?
-					.map(|result| quote!(Vec<#result>));
+			let sub_root_name = format!("{root_name}Array");
+			let props = props
+				.into_props()
+				.descriptor(array_descriptor)
+				.root_name(&sub_root_name)
+				.build();
+			let result = explore_descriptor(props, tokens)?.map(|result| quote!(Vec<#result>));
 
 			if is_root {
-				tokens.push(quote!(type #root_ident = #result;));
+				tokens.extend(quote!(type #root_ident = #result;));
 				Ok(Some(quote!(#root_ident)))
 			} else {
 				Ok(result)
@@ -307,23 +322,20 @@ pub fn explore_descriptor(
 			let result = Some(quote!(String));
 
 			if is_root {
-				tokens.push(quote!(type #root_ident = #result;));
+				tokens.extend(quote!(type #root_ident = #result;));
 				Ok(Some(quote!(#root_ident)))
 			} else {
 				Ok(result)
 			}
 		}
 		Descriptor::InputShape(object) => {
-			let mut object_tokens = vec![];
 			let result = explore_object_shape_descriptor(
 				StructElement::from_shape(&object.elements),
 				typedesc,
 				root_name,
 				is_input,
-				&mut object_tokens,
+				tokens,
 			)?;
-
-			tokens.push(object_tokens.into_iter().collect());
 
 			Ok(result)
 		}
@@ -338,7 +350,7 @@ pub fn explore_object_shape_descriptor(
 	typedesc: &Typedesc,
 	root_name: &str,
 	is_input: bool,
-	tokens: &mut Vec<TokenStream>,
+	tokens: &mut TokenStream,
 ) -> Result<Option<TokenStream>> {
 	let mut impl_named_args = vec![];
 	let mut struct_fields = vec![];
@@ -350,8 +362,14 @@ pub fn explore_object_shape_descriptor(
 		let safe_name = name.to_snake_case().into_safe();
 		let safe_name_ident = format_ident!("{safe_name}");
 		let pascal_name = name.to_pascal_case();
-		let root_name = format!("{root_name}{pascal_name}").into_safe();
-		let output = explore_descriptor(descriptor, typedesc, &root_name, is_input, tokens)?;
+		let sub_root_name = format!("{root_name}{pascal_name}").into_safe();
+		let sub_props = ExploreDescriptorProps::builder()
+			.typedesc(typedesc)
+			.is_input_bool(is_input)
+			.descriptor(descriptor)
+			.root_name(&sub_root_name)
+			.build();
+		let output = explore_descriptor(sub_props, tokens)?;
 		let output_token = element.wrap(&output);
 		let serde_annotation = (&safe_name != name).then_some(quote!(
 			#[cfg_attr(feature = "serde", serde(rename = #name))]
@@ -405,7 +423,7 @@ pub fn explore_object_shape_descriptor(
 		#impl_tokens
 	};
 
-	tokens.push(struct_tokens);
+	tokens.extend(struct_tokens);
 
 	Ok(Some(quote!(#root_ident)))
 }
