@@ -1,0 +1,26 @@
+[package]
+name = "edgedb_codegen_core"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+homepage.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+check_keyword = { workspace = true }
+edgedb-errors = { workspace = true }
+edgedb-protocol = { workspace = true, features = ["all-types", "with-serde"] }
+edgedb-tokio = { workspace = true, features = ["unstable", "derive"] }
+heck = { workspace = true }
+log = { workspace = true }
+proc-macro2 = { workspace = true }
+quote = { workspace = true }
+syn = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "process"] }
+typed-builder = { workspace = true }
+
+[lints]
+workspace = true

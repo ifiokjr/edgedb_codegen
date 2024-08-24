@@ -9,38 +9,39 @@ repository.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-check_keyword = { workspace = true }
-edgedb-errors = { workspace = true }
-edgedb-protocol = { workspace = true, features = ["all-types", "with-serde"] }
-edgedb-tokio = { workspace = true, features = ["unstable", "derive"] }
-heck = { workspace = true }
-log = { workspace = true }
-proc-macro2 = { workspace = true }
-quote = { workspace = true }
-serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
-syn = { workspace = true }
-thiserror = { workspace = true }
-tokio = { workspace = true, features = ["macros", "rt-multi-thread", "process"] }
-typed-builder = { workspace = true }
-
-[dev-dependencies]
-serial_test = { workspace = true }
-rustversion = { workspace = true }
+edgedb_codegen_macros = { workspace = true }
 uuid = { workspace = true }
 bytes = { workspace = true }
+edgedb-derive = { workspace = true }
+edgedb-errors = { workspace = true }
+edgedb-protocol = { workspace = true, features = ["all-types"] }
+edgedb-tokio = { workspace = true, features = ["unstable", "derive"], optional = true }
+serde = { workspace = true, features = ["derive"], optional = true }
+typed-builder = { workspace = true, optional = true }
+document-features = { workspace = true }
+
+[dev-dependencies]
+edgedb_codegen_core = { workspace = true }
+rustversion = { workspace = true }
 trybuild = { workspace = true }
 assert2 = { workspace = true }
 insta = { workspace = true, features = ["ron", "yaml", "redactions"] }
 rstest = { workspace = true }
-rstest_reuse = { workspace = true }
 test-log = { workspace = true, features = ["log", "trace"] }
 tokio = { workspace = true, features = ["time", "test-util", "fs"] }
+typed-builder = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
 
 [lints]
 workspace = true
 
 [features]
-serde = []
-query = []
-builder = []
+
+## This enables the `typed-builder` macro which can make creating `Input` props slightly easier. 
+builder = ["edgedb_codegen_macros/builder", "dep:typed-builder"]
+
+## Enable serde for the generated code.
+serde = ["edgedb_codegen_macros/serde", "edgedb-protocol/with-serde", "dep:serde"]
+
+## This turns on the `query` and `transaction` methods and anything that relies on `edgedb-tokio`. The reason to seperate this feature is to enable usage of this macro in browser environments.
+query = ["edgedb_codegen_macros/query", "dep:edgedb-tokio"]

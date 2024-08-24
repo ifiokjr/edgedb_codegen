@@ -1,20 +1,9 @@
 use std::path::PathBuf;
 use std::thread;
 
-use edgedb_codegen::*;
+use edgedb_codegen_core::*;
 use rstest::fixture;
 use rstest::rstest;
-use rstest_reuse::apply;
-use rstest_reuse::template;
-use trybuild::TestCases;
-
-#[rustversion::attr(not(nightly), ignore = "requires nightly")]
-#[cfg_attr(miri, ignore = "incompatible with miri")]
-#[test]
-fn compilation() {
-	let t = TestCases::new();
-	t.pass("tests/ui/*.rs");
-}
 
 macro_rules! set_snapshot_suffix {
     ($($expr:expr),*) => {
@@ -35,7 +24,6 @@ pub fn testname() -> String {
 		.to_string()
 }
 
-#[template]
 #[rstest]
 #[case::str("select 'i ❤️ edgedb'")]
 #[case::bool("select true")]
@@ -63,13 +51,10 @@ pub fn testname() -> String {
 	 <str>$ends_with;"
 )]
 #[case::types_query(TYPES_QUERY)]
-fn query_template_cases(#[case] query: &str) {}
-
-#[apply(query_template_cases)]
 #[tokio::test]
 async fn codegen_literals(testname: String, #[case] query: &str) -> Result<()> {
 	set_snapshot_suffix!("{}", testname);
-	let relative_path = format!("tests/ui/{testname}.rs");
+	let relative_path = format!("tests/codegen/{testname}.rs");
 	let descriptor = get_descriptor(query).await?;
 	let code = generate_rust_from_query(&descriptor, "example", query)?;
 	let content = rustfmt(&code.to_string()).await?;

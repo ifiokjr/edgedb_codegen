@@ -3,11 +3,12 @@ source: crates/edgedb_codegen/tests/codegen.rs
 expression: "&content"
 ---
 pub mod example {
+	use ::edgedb_codegen::exports as e;
 	#[doc = r" Execute the desired query."]
 	#[cfg(feature = "query")]
 	pub async fn query(
-		client: &edgedb_tokio::Client,
-	) -> core::result::Result<Vec<Output>, edgedb_errors::Error> {
+		client: &e::edgedb_tokio::Client,
+	) -> core::result::Result<Vec<Output>, e::edgedb_errors::Error> {
 		client
 			.query(
 				"WITH\n  MODULE schema,\n  material_scalars := (\n    SELECT ScalarType\n    \
@@ -67,8 +68,8 @@ pub mod example {
 	#[doc = r" Compose the query as part of a larger transaction."]
 	#[cfg(feature = "query")]
 	pub async fn transaction(
-		conn: &mut edgedb_tokio::Transaction,
-	) -> core::result::Result<Vec<Output>, edgedb_errors::Error> {
+		conn: &mut e::edgedb_tokio::Transaction,
+	) -> core::result::Result<Vec<Output>, e::edgedb_errors::Error> {
 		conn.query(
 			"WITH\n  MODULE schema,\n  material_scalars := (\n    SELECT ScalarType\n    FILTER \
 			 NOT .abstract\n       AND NOT EXISTS .enum_values\n       AND NOT EXISTS (SELECT \
@@ -123,40 +124,40 @@ pub mod example {
 	}
 	pub type Input = ();
 	#[derive(Clone, Debug)]
-	#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-	#[cfg_attr(feature = "query", derive(edgedb_derive::Queryable))]
-	#[cfg_attr(feature = "builder", derive(typed_builder::TypedBuilder))]
+	#[cfg_attr(feature = "serde", derive(e::serde::Serialize, e::serde::Deserialize))]
+	#[cfg_attr(feature = "query", derive(e::edgedb_derive::Queryable))]
+	#[cfg_attr(feature = "builder", derive(e::typed_builder::TypedBuilder))]
 	pub struct OutputBasesSet {
 		#[cfg_attr(feature = "builder", builder(setter(into)))]
-		pub id: uuid::Uuid,
+		pub id: e::uuid::Uuid,
 	}
 	#[derive(Clone, Debug)]
-	#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-	#[cfg_attr(feature = "query", derive(edgedb_derive::Queryable))]
-	#[cfg_attr(feature = "builder", derive(typed_builder::TypedBuilder))]
+	#[cfg_attr(feature = "serde", derive(e::serde::Serialize, e::serde::Deserialize))]
+	#[cfg_attr(feature = "query", derive(e::edgedb_derive::Queryable))]
+	#[cfg_attr(feature = "builder", derive(e::typed_builder::TypedBuilder))]
 	pub struct OutputUnionOfSet {
 		#[cfg_attr(feature = "builder", builder(setter(into)))]
-		pub id: uuid::Uuid,
+		pub id: e::uuid::Uuid,
 	}
 	#[derive(Clone, Debug)]
-	#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-	#[cfg_attr(feature = "query", derive(edgedb_derive::Queryable))]
-	#[cfg_attr(feature = "builder", derive(typed_builder::TypedBuilder))]
+	#[cfg_attr(feature = "serde", derive(e::serde::Serialize, e::serde::Deserialize))]
+	#[cfg_attr(feature = "query", derive(e::edgedb_derive::Queryable))]
+	#[cfg_attr(feature = "builder", derive(e::typed_builder::TypedBuilder))]
 	pub struct OutputIntersectionOfSet {
 		#[cfg_attr(feature = "builder", builder(setter(into)))]
-		pub id: uuid::Uuid,
+		pub id: e::uuid::Uuid,
 	}
 	#[derive(Clone, Debug)]
-	#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-	#[cfg_attr(feature = "query", derive(edgedb_derive::Queryable))]
-	#[cfg_attr(feature = "builder", derive(typed_builder::TypedBuilder))]
+	#[cfg_attr(feature = "serde", derive(e::serde::Serialize, e::serde::Deserialize))]
+	#[cfg_attr(feature = "query", derive(e::edgedb_derive::Queryable))]
+	#[cfg_attr(feature = "builder", derive(e::typed_builder::TypedBuilder))]
 	pub struct OutputPointersSetPointersSet {
 		# [cfg_attr (feature = "builder" , builder (default , setter (into , strip_option = (fallback = card_opt))))]
 		pub card: Option<String>,
 		#[cfg_attr(feature = "builder", builder(setter(into)))]
 		pub name: String,
 		# [cfg_attr (feature = "builder" , builder (default , setter (into , strip_option = (fallback = target_id_opt))))]
-		pub target_id: Option<uuid::Uuid>,
+		pub target_id: Option<e::uuid::Uuid>,
 		#[cfg_attr(feature = "builder", builder(setter(into)))]
 		pub kind: String,
 		# [cfg_attr (feature = "builder" , builder (default , setter (into , strip_option = (fallback = is_computed_opt))))]
@@ -165,16 +166,16 @@ pub mod example {
 		pub is_readonly: Option<bool>,
 	}
 	#[derive(Clone, Debug)]
-	#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-	#[cfg_attr(feature = "query", derive(edgedb_derive::Queryable))]
-	#[cfg_attr(feature = "builder", derive(typed_builder::TypedBuilder))]
+	#[cfg_attr(feature = "serde", derive(e::serde::Serialize, e::serde::Deserialize))]
+	#[cfg_attr(feature = "query", derive(e::edgedb_derive::Queryable))]
+	#[cfg_attr(feature = "builder", derive(e::typed_builder::TypedBuilder))]
 	pub struct OutputPointersSet {
 		# [cfg_attr (feature = "builder" , builder (default , setter (into , strip_option = (fallback = card_opt))))]
 		pub card: Option<String>,
 		#[cfg_attr(feature = "builder", builder(setter(into)))]
 		pub name: String,
 		# [cfg_attr (feature = "builder" , builder (default , setter (into , strip_option = (fallback = target_id_opt))))]
-		pub target_id: Option<uuid::Uuid>,
+		pub target_id: Option<e::uuid::Uuid>,
 		#[cfg_attr(feature = "builder", builder(setter(into)))]
 		pub kind: String,
 		#[cfg_attr(feature = "builder", builder(setter(into)))]
@@ -189,17 +190,17 @@ pub mod example {
 		pub pointers: Vec<OutputPointersSetPointersSet>,
 	}
 	#[derive(Clone, Debug)]
-	#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-	#[cfg_attr(feature = "query", derive(edgedb_derive::Queryable))]
-	#[cfg_attr(feature = "builder", derive(typed_builder::TypedBuilder))]
+	#[cfg_attr(feature = "serde", derive(e::serde::Serialize, e::serde::Deserialize))]
+	#[cfg_attr(feature = "query", derive(e::edgedb_derive::Queryable))]
+	#[cfg_attr(feature = "builder", derive(e::typed_builder::TypedBuilder))]
 	pub struct OutputExclusivesSet {
 		# [cfg_attr (feature = "builder" , builder (default , setter (into , strip_option = (fallback = target_opt))))]
 		pub target: Option<String>,
 	}
 	#[derive(Clone, Debug)]
-	#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-	#[cfg_attr(feature = "query", derive(edgedb_derive::Queryable))]
-	#[cfg_attr(feature = "builder", derive(typed_builder::TypedBuilder))]
+	#[cfg_attr(feature = "serde", derive(e::serde::Serialize, e::serde::Deserialize))]
+	#[cfg_attr(feature = "query", derive(e::edgedb_derive::Queryable))]
+	#[cfg_attr(feature = "builder", derive(e::typed_builder::TypedBuilder))]
 	pub struct OutputBacklinksSet {
 		#[cfg_attr(feature = "builder", builder(setter(into)))]
 		pub card: String,
@@ -208,45 +209,45 @@ pub mod example {
 		#[cfg_attr(feature = "builder", builder(setter(into)))]
 		pub stub: String,
 		# [cfg_attr (feature = "builder" , builder (default , setter (into , strip_option = (fallback = target_id_opt))))]
-		pub target_id: Option<uuid::Uuid>,
+		pub target_id: Option<e::uuid::Uuid>,
 		#[cfg_attr(feature = "builder", builder(setter(into)))]
 		pub kind: String,
 		# [cfg_attr (feature = "builder" , builder (default , setter (into , strip_option = (fallback = is_exclusive_opt))))]
 		pub is_exclusive: Option<bool>,
 	}
 	#[derive(Clone, Debug)]
-	#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-	#[cfg_attr(feature = "query", derive(edgedb_derive::Queryable))]
-	#[cfg_attr(feature = "builder", derive(typed_builder::TypedBuilder))]
+	#[cfg_attr(feature = "serde", derive(e::serde::Serialize, e::serde::Deserialize))]
+	#[cfg_attr(feature = "query", derive(e::edgedb_derive::Queryable))]
+	#[cfg_attr(feature = "builder", derive(e::typed_builder::TypedBuilder))]
 	pub struct OutputBacklinkStubsArray {
 		#[cfg_attr(feature = "builder", builder(setter(into)))]
 		pub card: String,
 		#[cfg_attr(feature = "builder", builder(setter(into)))]
 		pub name: String,
 		# [cfg_attr (feature = "builder" , builder (default , setter (into , strip_option = (fallback = target_id_opt))))]
-		pub target_id: Option<uuid::Uuid>,
+		pub target_id: Option<e::uuid::Uuid>,
 		#[cfg_attr(feature = "builder", builder(setter(into)))]
 		pub kind: String,
 		#[cfg_attr(feature = "builder", builder(setter(into)))]
 		pub is_exclusive: bool,
 	}
 	#[derive(Clone, Debug)]
-	#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-	#[cfg_attr(feature = "query", derive(edgedb_derive::Queryable))]
-	#[cfg_attr(feature = "builder", derive(typed_builder::TypedBuilder))]
+	#[cfg_attr(feature = "serde", derive(e::serde::Serialize, e::serde::Deserialize))]
+	#[cfg_attr(feature = "query", derive(e::edgedb_derive::Queryable))]
+	#[cfg_attr(feature = "builder", derive(e::typed_builder::TypedBuilder))]
 	pub struct OutputTupleElementsSet {
 		#[cfg_attr(feature = "builder", builder(setter(into)))]
-		pub target_id: uuid::Uuid,
+		pub target_id: e::uuid::Uuid,
 		# [cfg_attr (feature = "builder" , builder (default , setter (into , strip_option = (fallback = name_opt))))]
 		pub name: Option<String>,
 	}
 	#[derive(Clone, Debug)]
-	#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-	#[cfg_attr(feature = "query", derive(edgedb_derive::Queryable))]
-	#[cfg_attr(feature = "builder", derive(typed_builder::TypedBuilder))]
+	#[cfg_attr(feature = "serde", derive(e::serde::Serialize, e::serde::Deserialize))]
+	#[cfg_attr(feature = "query", derive(e::edgedb_derive::Queryable))]
+	#[cfg_attr(feature = "builder", derive(e::typed_builder::TypedBuilder))]
 	pub struct Output {
 		#[cfg_attr(feature = "builder", builder(setter(into)))]
-		pub id: uuid::Uuid,
+		pub id: e::uuid::Uuid,
 		#[cfg_attr(feature = "builder", builder(setter(into)))]
 		pub name: String,
 		# [cfg_attr (feature = "builder" , builder (default , setter (into , strip_option = (fallback = is_abstract_opt))))]
@@ -258,7 +259,7 @@ pub mod example {
 		#[cfg_attr(feature = "builder", builder(setter(into)))]
 		pub is_seq: bool,
 		# [cfg_attr (feature = "builder" , builder (default , setter (into , strip_option = (fallback = material_id_opt))))]
-		pub material_id: Option<uuid::Uuid>,
+		pub material_id: Option<e::uuid::Uuid>,
 		#[cfg_attr(feature = "builder", builder(default))]
 		pub bases: Vec<OutputBasesSet>,
 		#[cfg_attr(feature = "builder", builder(default))]
@@ -274,10 +275,10 @@ pub mod example {
 		#[cfg_attr(feature = "builder", builder(setter(into)))]
 		pub backlink_stubs: Vec<OutputBacklinkStubsArray>,
 		# [cfg_attr (feature = "builder" , builder (default , setter (into , strip_option = (fallback = array_element_id_opt))))]
-		pub array_element_id: Option<uuid::Uuid>,
+		pub array_element_id: Option<e::uuid::Uuid>,
 		#[cfg_attr(feature = "builder", builder(default))]
 		pub tuple_elements: Vec<OutputTupleElementsSet>,
 		# [cfg_attr (feature = "builder" , builder (default , setter (into , strip_option = (fallback = multirange_element_id_opt))))]
-		pub multirange_element_id: Option<uuid::Uuid>,
+		pub multirange_element_id: Option<e::uuid::Uuid>,
 	}
 }

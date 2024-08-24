@@ -3,20 +3,21 @@ source: crates/edgedb_codegen/tests/codegen.rs
 expression: "&content"
 ---
 pub mod example {
+	use ::edgedb_codegen::exports as e;
 	#[doc = r" Execute the desired query."]
 	#[cfg(feature = "query")]
 	pub async fn query(
-		client: &edgedb_tokio::Client,
-	) -> core::result::Result<Output, edgedb_errors::Error> {
+		client: &e::edgedb_tokio::Client,
+	) -> core::result::Result<Output, e::edgedb_errors::Error> {
 		client.query_required_single("select 42n", &()).await
 	}
 	#[doc = r" Compose the query as part of a larger transaction."]
 	#[cfg(feature = "query")]
 	pub async fn transaction(
-		conn: &mut edgedb_tokio::Transaction,
-	) -> core::result::Result<Output, edgedb_errors::Error> {
+		conn: &mut e::edgedb_tokio::Transaction,
+	) -> core::result::Result<Output, e::edgedb_errors::Error> {
 		conn.query_required_single("select 42n", &()).await
 	}
 	pub type Input = ();
-	pub type Output = edgedb_protocol::model::BigInt;
+	pub type Output = e::edgedb_protocol::model::BigInt;
 }

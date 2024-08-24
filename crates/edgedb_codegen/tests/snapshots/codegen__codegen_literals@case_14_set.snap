@@ -3,11 +3,12 @@ source: crates/edgedb_codegen/tests/codegen.rs
 expression: "&content"
 ---
 pub mod example {
+	use ::edgedb_codegen::exports as e;
 	#[doc = r" Execute the desired query."]
 	#[cfg(feature = "query")]
 	pub async fn query(
-		client: &edgedb_tokio::Client,
-	) -> core::result::Result<Vec<Output>, edgedb_errors::Error> {
+		client: &e::edgedb_tokio::Client,
+	) -> core::result::Result<Vec<Output>, e::edgedb_errors::Error> {
 		client
 			.query("select {\"set\", \"of\", \"strings\"}", &())
 			.await
@@ -15,8 +16,8 @@ pub mod example {
 	#[doc = r" Compose the query as part of a larger transaction."]
 	#[cfg(feature = "query")]
 	pub async fn transaction(
-		conn: &mut edgedb_tokio::Transaction,
-	) -> core::result::Result<Vec<Output>, edgedb_errors::Error> {
+		conn: &mut e::edgedb_tokio::Transaction,
+	) -> core::result::Result<Vec<Output>, e::edgedb_errors::Error> {
 		conn.query("select {\"set\", \"of\", \"strings\"}", &())
 			.await
 	}
