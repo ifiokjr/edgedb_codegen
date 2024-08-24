@@ -19,7 +19,7 @@ pub mod example {
 		conn.query_required_single(QUERY, &()).await
 	}
 	pub type Input = ();
-	pub type Output = i64;
+	pub type Output = (String, i64, bool);
 	#[doc = r" The original query string provided to the macro. Can be reused in your codebase."]
-	pub const QUERY: &str = "select 3";
+	pub const QUERY: &str = "select ('Apple', 7, true)";
 }

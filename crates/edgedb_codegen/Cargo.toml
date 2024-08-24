@@ -9,39 +9,79 @@ repository.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-edgedb_codegen_macros = { workspace = true }
-uuid = { workspace = true }
 bytes = { workspace = true }
+document-features = { workspace = true }
 edgedb-derive = { workspace = true }
 edgedb-errors = { workspace = true }
 edgedb-protocol = { workspace = true, features = ["all-types"] }
 edgedb-tokio = { workspace = true, features = ["unstable", "derive"], optional = true }
+edgedb_codegen_macros = { workspace = true }
 serde = { workspace = true, features = ["derive"], optional = true }
-typed-builder = { workspace = true, optional = true }
-document-features = { workspace = true }
+serde_bytes = { workspace = true, optional = true }
+typed-builder = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true, optional = true }
+num-bigint = { workspace = true, optional = true }
+num-traits = { workspace = true, optional = true }
+bigdecimal = { workspace = true, optional = true }
 
 [dev-dependencies]
-edgedb_codegen_core = { workspace = true }
-rustversion = { workspace = true }
-trybuild = { workspace = true }
 assert2 = { workspace = true }
+edgedb_codegen_core = { workspace = true }
 insta = { workspace = true, features = ["ron", "yaml", "redactions"] }
 rstest = { workspace = true }
+rustversion = { workspace = true }
 test-log = { workspace = true, features = ["log", "trace"] }
 tokio = { workspace = true, features = ["time", "test-util", "fs"] }
-typed-builder = { workspace = true }
-serde = { workspace = true, features = ["derive"] }
+trybuild = { workspace = true }
 
 [lints]
 workspace = true
 
 [features]
 
-## This enables the `typed-builder` macro which can make creating `Input` props slightly easier. 
-builder = ["edgedb_codegen_macros/builder", "dep:typed-builder"]
+#! ### Default
+#! By default all types are included.
+default = ["with_all"]
+
+#! ### Types
+
+## Include the `num-bigint` dependency.
+with_bigint = [
+	"edgedb_codegen_macros/with_bigint",
+	"dep:num-bigint",
+	"dep:num-traits",
+	"edgedb-protocol/with-num-bigint",
+]
+
+## Use the `bigdecimal` crate.
+with_bigdecimal = [
+	"edgedb_codegen_macros/with_bigdecimal",
+	"dep:bigdecimal",
+	"dep:num-bigint",
+	"dep:num-traits",
+	"edgedb-protocol/with-bigdecimal",
+]
+
+## Use the `chrono` crate for all dates.
+with_chrono = ["edgedb_codegen_macros/with_chrono", "dep:chrono", "edgedb-protocol/with-chrono"]
+with_all = [
+	"edgedb_codegen_macros/with_all",
+	"with_bigint",
+	"with_bigdecimal",
+	"with_chrono",
+	"edgedb-protocol/all-types",
+]
 
 ## Enable serde for the generated code.
-serde = ["edgedb_codegen_macros/serde", "edgedb-protocol/with-serde", "dep:serde"]
+serde = [
+	"edgedb_codegen_macros/serde",
+	"edgedb-protocol/with-serde",
+	"dep:serde",
+	"dep:serde_bytes",
+	"uuid/serde",
+	"chrono/serde",
+]
 
 ## This turns on the `query` and `transaction` methods and anything that relies on `edgedb-tokio`. The reason to seperate this feature is to enable usage of this macro in browser environments.
 query = ["edgedb_codegen_macros/query", "dep:edgedb-tokio"]

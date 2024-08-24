@@ -1,0 +1,5 @@
+error: expected string literal
+ --> tests/compile/macros/incorrect_args.rs:4:32
+  |
+4 |     edgedb_query!(example_module, invalid);
+  |                                   ^^^^^^^

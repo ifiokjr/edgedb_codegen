@@ -5,7 +5,7 @@ allowed_blank_lines = 1
 
 [[rule]]
 include = ["**/Cargo.toml", "Cargo.toml"]
-keys = ["dependencies", "workspace.dependencies", "workspace.metadata.bin"]
+keys = ["dependencies", "dev-dependencies", "workspace.dependencies", "workspace.metadata.bin"]
 
 [rule.formatting]
 reorder_keys = true

@@ -34,7 +34,6 @@ pub fn testname() -> String {
 #[case::uuid("select <uuid>'a5ea6360-75bd-4c20-b69c-8f317b0d2857'")]
 #[case::datetime("select <datetime>'1999-03-31T15:17:00Z'")]
 #[case::duration("select <duration>'45.6 seconds'")]
-#[case::bytes("select b'bina\\x01ry'")]
 #[case::array("select [1, 2, 3]")]
 #[case::tuple("select ('Apple', 7, true)")]
 #[case::named_tuple("select (fruit := 'Apple', quantity := 3.14, fresh := true)")]
@@ -51,10 +50,13 @@ pub fn testname() -> String {
 	 <str>$ends_with;"
 )]
 #[case::types_query(TYPES_QUERY)]
+// #[case::bytes("select b'bina\\x01ry'")] // TODO: bytes don't implement `DecodeScalar` yet.
+// #[case::range("select range(0, 10)")] // TODO: range doesn't have an export from the protocol
+// yet.
 #[tokio::test]
 async fn codegen_literals(testname: String, #[case] query: &str) -> Result<()> {
 	set_snapshot_suffix!("{}", testname);
-	let relative_path = format!("tests/codegen/{testname}.rs");
+	let relative_path = format!("tests/compile/codegen/{testname}.rs");
 	let descriptor = get_descriptor(query).await?;
 	let code = generate_rust_from_query(&descriptor, "example", query)?;
 	let content = rustfmt(&code.to_string()).await?;

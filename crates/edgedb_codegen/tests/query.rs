@@ -1,11 +1,11 @@
-#![cfg(all(feature = "builder", feature = "query", feature = "serde"))]
+#![cfg(all(feature = "query", feature = "serde"))]
 
+use edgedb_codegen::edgedb_query;
 use edgedb_codegen_core::Result;
-use edgedb_codegen_macros::edgedb_query;
 use edgedb_tokio::create_client;
 
 #[tokio::test]
-pub async fn simple_query() -> Result<()> {
+pub async fn simple_query_with_input() -> Result<()> {
 	let client = create_client().await?;
 	let input = simple::Input::builder()
 		.custom("This is a custom field")

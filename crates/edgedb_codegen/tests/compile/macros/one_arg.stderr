@@ -1,0 +1,7 @@
+error: expected `,`
+ --> tests/compile/macros/one_arg.rs:4:2
+  |
+4 |     edgedb_query!(example_module);
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: this error originates in the macro `edgedb_query` (in Nightly builds, run with -Z macro-backtrace for more info)

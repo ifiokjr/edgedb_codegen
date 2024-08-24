@@ -1,3 +1,4 @@
+#![cfg(all(feature = "query", feature = "serde"))]
 use std::thread;
 
 use rstest::fixture;
@@ -22,15 +23,9 @@ pub fn testname() -> String {
 #[rustversion::attr(not(nightly), ignore = "requires nightly")]
 #[cfg_attr(miri, ignore = "incompatible with miri")]
 #[test]
-fn macro_compilation_errors() {
+fn check_compilation() {
 	let t = TestCases::new();
-	t.compile_fail("tests/macros/*.rs");
-}
 
-#[rustversion::attr(not(nightly), ignore = "requires nightly")]
-#[cfg_attr(miri, ignore = "incompatible with miri")]
-#[test]
-fn codegen_compilation_pass() {
-	let t = TestCases::new();
-	t.pass("tests/codegen/*.rs");
+	t.compile_fail("tests/compile/macros/*.rs");
+	t.pass("tests/compile/codegen/*.rs");
 }

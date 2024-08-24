@@ -133,7 +133,7 @@ pub fn generate_rust_from_query(
 	let mut transaction_props =
 		vec![quote!(#transaction_prop_ident: &mut #EXPORTS_IDENT::edgedb_tokio::Transaction)];
 	let args = vec![
-		quote! {#query},
+		quote!(#QUERY_CONSTANT),
 		input.root().map_or(quote!(&()), |_| quote!(#props_ident)),
 	];
 	let inner_return = output.root().map_or(quote!(()), |_| quote!(#output_ident));
@@ -161,6 +161,9 @@ pub fn generate_rust_from_query(
 			}
 
 			#tokens
+
+			/// The original query string provided to the macro. Can be reused in your codebase.
+			pub const #QUERY_CONSTANT: &str = #query;
 		}
 	};
 
@@ -393,7 +396,7 @@ pub fn explore_object_shape_descriptor(
 			match element.cardinality() {
 				Cardinality::AtMostOne => {
 					let fallback_ident = format_ident!("{safe_name_ident}_opt");
-					Some(quote!(default, setter(into, strip_option=(fallback = #fallback_ident))))
+					Some(quote!(default, setter(into, strip_option(fallback = #fallback_ident))))
 				}
 				Cardinality::One => Some(quote!(setter(into))),
 				Cardinality::Many => Some(quote!(default)),
@@ -401,7 +404,7 @@ pub fn explore_object_shape_descriptor(
 			}
 		};
 		let builder_annotation = builder_fields.is_some().then_some(quote!(
-			#[cfg_attr(feature = "builder", builder(#builder_fields))]
+			#[builder(#builder_fields)]
 		));
 
 		struct_fields.push(quote! {
@@ -427,10 +430,9 @@ pub fn explore_object_shape_descriptor(
 		}
 	});
 	let struct_tokens = quote! {
-		#[derive(Clone, Debug)]
+		#[derive(Clone, Debug, #EXPORTS_IDENT::typed_builder::TypedBuilder)]
 		#[cfg_attr(feature = "serde", derive(#EXPORTS_IDENT::serde::Serialize, #EXPORTS_IDENT::serde::Deserialize))]
 		#[cfg_attr(feature = "query", derive(#EXPORTS_IDENT::edgedb_derive::Queryable))]
-		#[cfg_attr(feature = "builder", derive(#EXPORTS_IDENT::typed_builder::TypedBuilder))]
 		pub struct #root_ident {
 			#(#struct_fields)*
 		}
@@ -509,17 +511,35 @@ fn uuid_to_token_name(uuid: &Uuid) -> TokenStream {
 		STD_INT64 => quote!(i64),
 		STD_FLOAT32 => quote!(f32),
 		STD_FLOAT64 => quote!(f64),
+		#[cfg(not(feature = "with_bigdecimal"))]
 		STD_DECIMAL => quote!(#EXPORTS_IDENT::edgedb_protocol::model::Decimal),
+		#[cfg(feature = "with_bigdecimal")]
+		STD_DECIMAL => quote!(#EXPORTS_IDENT::bigdecimal::BigDecimal),
 		STD_BOOL => quote!(bool),
+		#[cfg(not(feature = "with_chrono"))]
 		STD_DATETIME => quote!(#EXPORTS_IDENT::edgedb_protocol::model::Datetime),
+		#[cfg(feature = "with_chrono")]
+		STD_DATETIME => quote!(#EXPORTS_IDENT::chrono::DateTime<#EXPORTS_IDENT::chrono::Utc>),
+		#[cfg(not(feature = "with_chrono"))]
 		CAL_LOCAL_DATETIME => quote!(#EXPORTS_IDENT::edgedb_protocol::model::LocalDatetime),
+		#[cfg(feature = "with_chrono")]
+		CAL_LOCAL_DATETIME => quote!(#EXPORTS_IDENT::chrono::NaiveDateTime),
+		#[cfg(not(feature = "with_chrono"))]
 		CAL_LOCAL_DATE => quote!(#EXPORTS_IDENT::edgedb_protocol::model::LocalDate),
+		#[cfg(feature = "with_chrono")]
+		CAL_LOCAL_DATE => quote!(#EXPORTS_IDENT::chrono::NaiveDate),
+		#[cfg(not(feature = "with_chrono"))]
 		CAL_LOCAL_TIME => quote!(#EXPORTS_IDENT::edgedb_protocol::model::LocalTime),
+		#[cfg(feature = "with_chrono")]
+		CAL_LOCAL_TIME => quote!(#EXPORTS_IDENT::chrono::NaiveTime),
 		STD_DURATION => quote!(#EXPORTS_IDENT::edgedb_protocol::model::Duration),
 		CAL_RELATIVE_DURATION => quote!(#EXPORTS_IDENT::edgedb_protocol::model::RelativeDuration),
 		CAL_DATE_DURATION => quote!(#EXPORTS_IDENT::edgedb_protocol::model::DateDuration),
 		STD_JSON => quote!(#EXPORTS_IDENT::edgedb_protocol::model::Json),
+		#[cfg(not(feature = "with_bigint"))]
 		STD_BIGINT => quote!(#EXPORTS_IDENT::edgedb_protocol::model::BigInt),
+		#[cfg(feature = "with_bigint")]
+		STD_BIGINT => quote!(#EXPORTS_IDENT::num_bigint::BigInt),
 		CFG_MEMORY => quote!(#EXPORTS_IDENT::edgedb_protocol::model::ConfigMemory),
 		PGVECTOR_VECTOR => quote!(#EXPORTS_IDENT::edgedb_protocol::model::Vector),
 		_ => quote!(()),

@@ -17,23 +17,13 @@ proc-macro2 = { workspace = true }
 quote = { workspace = true }
 syn = { workspace = true }
 
-[dev-dependencies]
-trybuild = { workspace = true }
-insta = { workspace = true, features = ["yaml", "ron"] }
-assert2 = { workspace = true }
-rstest = { workspace = true }
-edgedb-derive = { workspace = true }
-edgedb-errors = { workspace = true }
-edgedb-protocol = { workspace = true, features = ["all-types", "with-serde"] }
-edgedb-tokio = { workspace = true, features = ["unstable", "derive"] }
-typed-builder = { workspace = true }
-serde = { workspace = true, features = ["derive"] }
-tokio = { workspace = true, features = ["time", "test-util"] }
-
 [lints]
 workspace = true
 
 [features]
+with_bigint = ["edgedb_codegen_core/with_bigint"]
+with_bigdecimal = ["edgedb_codegen_core/with_bigdecimal"]
+with_chrono = ["edgedb_codegen_core/with_chrono"]
+with_all = ["edgedb_codegen_core/with_all"]
 serde = []
 query = []
-builder = []
