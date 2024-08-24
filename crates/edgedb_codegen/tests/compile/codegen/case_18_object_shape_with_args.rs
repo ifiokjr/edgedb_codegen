@@ -44,11 +44,11 @@ fn main() {
 			#[builder(setter(into))]
 			pub pubkey: String,
 			#[builder(setter(into))]
-			pub created_at: e::edgedb_protocol::model::Datetime,
+			pub created_at: e::chrono::DateTime<e::chrono::Utc>,
 			#[builder(setter(into))]
 			pub id: e::uuid::Uuid,
 			#[builder(setter(into))]
-			pub updated_at: e::edgedb_protocol::model::Datetime,
+			pub updated_at: e::chrono::DateTime<e::chrono::Utc>,
 			#[builder(setter(into))]
 			pub primary: bool,
 			# [builder (default , setter (into , strip_option (fallback = description_opt)))]
@@ -63,9 +63,9 @@ fn main() {
 			#[builder(setter(into))]
 			pub id: e::uuid::Uuid,
 			#[builder(setter(into))]
-			pub created_at: e::edgedb_protocol::model::Datetime,
+			pub created_at: e::chrono::DateTime<e::chrono::Utc>,
 			#[builder(setter(into))]
-			pub updated_at: e::edgedb_protocol::model::Datetime,
+			pub updated_at: e::chrono::DateTime<e::chrono::Utc>,
 			# [builder (default , setter (into , strip_option (fallback = description_opt)))]
 			pub description: Option<String>,
 			#[builder(setter(into))]

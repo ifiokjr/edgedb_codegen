@@ -16,7 +16,7 @@ fn main() {
 			conn.query_required_single(QUERY, &()).await
 		}
 		pub type Input = ();
-		pub type Output = e::edgedb_protocol::model::BigInt;
+		pub type Output = e::num_bigint::BigInt;
 		#[doc = r" The original query string provided to the macro. Can be reused in your codebase."]
 		pub const QUERY: &str = "select 42n";
 	}

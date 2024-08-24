@@ -16,7 +16,7 @@ fn main() {
 			conn.query_required_single(QUERY, &()).await
 		}
 		pub type Input = ();
-		pub type Output = e::edgedb_protocol::model::Datetime;
+		pub type Output = e::chrono::DateTime<e::chrono::Utc>;
 		#[doc = r" The original query string provided to the macro. Can be reused in your codebase."]
 		pub const QUERY: &str = "select <datetime>'1999-03-31T15:17:00Z'";
 	}

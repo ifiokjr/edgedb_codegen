@@ -27,7 +27,7 @@ bigdecimal = { workspace = true, optional = true }
 
 [dev-dependencies]
 assert2 = { workspace = true }
-edgedb_codegen_core = { workspace = true }
+edgedb_codegen_core = { workspace = true, features = ["with_all"] }
 insta = { workspace = true, features = ["ron", "yaml", "redactions"] }
 rstest = { workspace = true }
 rustversion = { workspace = true }
