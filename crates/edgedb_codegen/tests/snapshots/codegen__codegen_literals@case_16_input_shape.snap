@@ -1,25 +1,39 @@
 ---
-source: crates/edgedb_codegen/src/lib.rs
-expression: content
+source: crates/edgedb_codegen/tests/codegen.rs
+expression: "&content"
 ---
 pub mod example {
+	#[doc = r" Execute the desired query."]
 	#[cfg(feature = "query")]
 	pub async fn query(
 		client: &edgedb_tokio::Client,
 	) -> core::result::Result<Output, edgedb_errors::Error> {
 		client
 			.query_required_single(
-				"\n\t\tselect {\n\t\t  my_string := RelationshipType.Follow,\n\t\t  my_number := \
-				 42,\n\t\t  several_numbers := {1, 2, 3},\n\t\t  array := [1, 2, 3],\n\t\t};",
+				"select { my_string := RelationshipType.Follow, my_number := 42, several_numbers \
+				 := {1, 2, 3}, array := [1, 2, 3] };",
 				&(),
 			)
 			.await
 	}
+	#[doc = r" Compose the query as part of a larger transaction."]
+	#[cfg(feature = "query")]
+	pub async fn transaction(
+		conn: &mut edgedb_tokio::Transaction,
+	) -> core::result::Result<Output, edgedb_errors::Error> {
+		conn.query_required_single(
+			"select { my_string := RelationshipType.Follow, my_number := 42, several_numbers := \
+			 {1, 2, 3}, array := [1, 2, 3] };",
+			&(),
+		)
+		.await
+	}
+	pub type Input = ();
 	#[derive(Clone, Debug)]
 	#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 	#[cfg_attr(feature = "query", derive(edgedb_derive::Queryable))]
 	#[cfg_attr(feature = "builder", derive(typed_builder::TypedBuilder))]
-	struct Output {
+	pub struct Output {
 		#[cfg_attr(feature = "builder", builder(setter(into)))]
 		pub my_string: String,
 		#[cfg_attr(feature = "builder", builder(setter(into)))]

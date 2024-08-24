@@ -111,5 +111,7 @@ pub const INPUT_NAME: &str = "Input";
 pub const OUTPUT_NAME: &str = "Output";
 /// Name of the query function.
 pub const QUERY_NAME: &str = "query";
-pub const CLIENT_NAME: &str = "client";
+pub const QUERY_PROP_NAME: &str = "client";
+pub const TRANSACTION_NAME: &str = "transaction";
+pub const TRANSACTION_PROP_NAME: &str = "conn";
 pub const PROPS_NAME: &str = "props";

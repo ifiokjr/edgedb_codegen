@@ -1,6 +1,4 @@
-use std::io::Write;
 use std::io::{self};
-use std::process::Command;
 use std::process::Stdio;
 
 use proc_macro2::Punct;
@@ -8,8 +6,10 @@ use proc_macro2::Spacing;
 use proc_macro2::TokenStream;
 use quote::ToTokens;
 use quote::TokenStreamExt;
+use tokio::io::AsyncWriteExt;
+use tokio::process::Command;
 
-pub fn rustfmt(source: &str) -> io::Result<String> {
+pub async fn rustfmt(source: &str) -> io::Result<String> {
 	let mut process = Command::new("rustfmt")
 		.arg("--emit=stdout")
 		.stdin(Stdio::piped())
@@ -17,11 +17,11 @@ pub fn rustfmt(source: &str) -> io::Result<String> {
 		.spawn()?;
 
 	let mut stdin = process.stdin.take().unwrap();
-	stdin.write_all(source.as_bytes())?;
-	stdin.flush()?;
+	stdin.write_all(source.as_bytes()).await?;
+	stdin.flush().await?;
 	drop(stdin);
 
-	String::from_utf8(process.wait_with_output()?.stdout)
+	String::from_utf8(process.wait_with_output().await?.stdout)
 		.map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "Rustfmt output not UTF-8"))
 }
 

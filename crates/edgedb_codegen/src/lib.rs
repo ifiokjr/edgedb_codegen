@@ -92,9 +92,11 @@ pub fn generate_rust_from_query(
 ) -> Result<TokenStream> {
 	let input_ident = format_ident!("{INPUT_NAME}");
 	let output_ident = format_ident!("{OUTPUT_NAME}");
-	let query_ident = format_ident!("{QUERY_NAME}");
 	let props_ident = format_ident!("{PROPS_NAME}");
-	let client_ident = format_ident!("{CLIENT_NAME}");
+	let query_ident = format_ident!("{QUERY_NAME}");
+	let query_prop_ident = format_ident!("{QUERY_PROP_NAME}");
+	let transaction_ident = format_ident!("{TRANSACTION_NAME}");
+	let transaction_prop_ident = format_ident!("{TRANSACTION_PROP_NAME}");
 	let kebab_name: syn::Ident = syn::parse_str(&name.to_kebab_case())?;
 	let input = descriptor.input.decode()?;
 	let output = descriptor.output.decode()?;
@@ -121,12 +123,15 @@ pub fn generate_rust_from_query(
 	)?;
 
 	let query_method = match descriptor.result_cardinality {
-		Cardinality::NoResult | Cardinality::AtMostOne => quote!(query_single),
+		Cardinality::NoResult => quote!(execute),
+		Cardinality::AtMostOne => quote!(query_single),
 		Cardinality::One => quote!(query_required_single),
 		Cardinality::Many | Cardinality::AtLeastOne => quote!(query),
 	};
 
-	let mut props = vec![quote!(#client_ident: &edgedb_tokio::Client)];
+	let mut query_props = vec![quote!(#query_prop_ident: &edgedb_tokio::Client)];
+	let mut transaction_props =
+		vec![quote!(#transaction_prop_ident: &mut edgedb_tokio::Transaction)];
 	let args = vec![
 		quote! {#query},
 		input.root().map_or(quote!(&()), |_| quote!(#props_ident)),
@@ -135,14 +140,22 @@ pub fn generate_rust_from_query(
 	let returns = wrap_token_with_cardinality(Some(descriptor.result_cardinality), inner_return);
 
 	if input.root().is_some() {
-		props.push(quote!(#props_ident: &#input_ident));
+		query_props.push(quote!(#props_ident: &#input_ident));
+		transaction_props.push(quote!(#props_ident: &#input_ident));
 	}
 
 	let token_stream = quote! {
 		pub mod #kebab_name {
+			/// Execute the desired query.
 			#[cfg(feature = "query")]
-			pub async fn #query_ident(#(#props),*) -> core::result::Result<#returns, edgedb_errors::Error> {
-				#client_ident.#query_method(#(#args),*).await
+			pub async fn #query_ident(#(#query_props),*) -> core::result::Result<#returns, edgedb_errors::Error> {
+				#query_prop_ident.#query_method(#(#args),*).await
+			}
+
+			/// Compose the query as part of a larger transaction.
+			#[cfg(feature = "query")]
+			pub async fn #transaction_ident(#(#transaction_props),*) -> core::result::Result<#returns, edgedb_errors::Error> {
+				#transaction_prop_ident.#query_method(#(#args),*).await
 			}
 
 			#tokens
@@ -208,7 +221,7 @@ fn explore_descriptor(
 
 	let Some(descriptor) = descriptor else {
 		if is_root {
-			tokens.extend(quote!(type #root_ident = ();));
+			tokens.extend(quote!(pub type #root_ident = ();));
 		}
 
 		return Ok(None);
@@ -226,7 +239,7 @@ fn explore_descriptor(
 			let result = explore_descriptor(props, tokens)?.map(|result| quote!(Vec<#result>));
 
 			if is_root {
-				tokens.extend(quote!(type #root_ident = #result;));
+				tokens.extend(quote!(pub type #root_ident = #result;));
 				Ok(Some(quote!(#root_ident)))
 			} else {
 				Ok(result)
@@ -247,7 +260,7 @@ fn explore_descriptor(
 			let result = uuid_to_token_name(&base_scalar.id);
 
 			if is_root {
-				tokens.extend(quote!(type #root_ident = #result;));
+				tokens.extend(quote!(pub type #root_ident = #result;));
 				Ok(Some(quote!(#root_ident)))
 			} else {
 				Ok(Some(result))
@@ -283,7 +296,7 @@ fn explore_descriptor(
 			let result = quote!((#tuple_tokens));
 
 			if is_root {
-				tokens.extend(quote!(type #root_ident = #result;));
+				tokens.extend(quote!(pub type #root_ident = #result;));
 				Ok(Some(quote!(#root_ident)))
 			} else {
 				Ok(Some(result))
@@ -311,7 +324,7 @@ fn explore_descriptor(
 			let result = explore_descriptor(props, tokens)?.map(|result| quote!(Vec<#result>));
 
 			if is_root {
-				tokens.extend(quote!(type #root_ident = #result;));
+				tokens.extend(quote!(pub type #root_ident = #result;));
 				Ok(Some(quote!(#root_ident)))
 			} else {
 				Ok(result)
@@ -322,7 +335,7 @@ fn explore_descriptor(
 			let result = Some(quote!(String));
 
 			if is_root {
-				tokens.extend(quote!(type #root_ident = #result;));
+				tokens.extend(quote!(pub type #root_ident = #result;));
 				Ok(Some(quote!(#root_ident)))
 			} else {
 				Ok(result)
@@ -496,8 +509,8 @@ fn uuid_to_token_name(uuid: &Uuid) -> TokenStream {
 		STD_FLOAT64 => quote!(f64),
 		STD_DECIMAL => quote!(edgedb_protocol::model::Decimal),
 		STD_BOOL => quote!(bool),
-		STD_DATETIME => quote!(edgedb_protocol::model::DateTime),
-		CAL_LOCAL_DATETIME => quote!(edgedb_protocol::model::LocalDateTime),
+		STD_DATETIME => quote!(edgedb_protocol::model::Datetime),
+		CAL_LOCAL_DATETIME => quote!(edgedb_protocol::model::LocalDatetime),
 		CAL_LOCAL_DATE => quote!(edgedb_protocol::model::LocalDate),
 		CAL_LOCAL_TIME => quote!(edgedb_protocol::model::LocalTime),
 		STD_DURATION => quote!(edgedb_protocol::model::Duration),
@@ -517,100 +530,4 @@ pub async fn get_types() -> Result<()> {
 	log::debug!("{}", json.as_ref());
 
 	Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-	use super::*;
-
-	#[tokio::test]
-	async fn simple() -> Result<()> {
-		let query = r#"select {hello := "world", custom := <str>$custom }"#;
-		let descriptor = get_descriptor(query).await?;
-		let code = generate_rust_from_query(&descriptor, "example", query)?;
-		let content = rustfmt(&code.to_string())?;
-
-		insta::assert_snapshot!(content);
-
-		Ok(())
-	}
-
-	#[tokio::test]
-	async fn empty_set_query() -> Result<()> {
-		let query = "select <int64>{}";
-		let descriptor = get_descriptor(query).await?;
-		let code = generate_rust_from_query(&descriptor, "example", query)?;
-		let content = rustfmt(&code.to_string())?;
-
-		insta::assert_snapshot!(content);
-
-		Ok(())
-	}
-
-	#[tokio::test]
-	async fn can_generate_content_without_args() -> Result<()> {
-		let query = "select Team {**}";
-		let descriptor = get_descriptor(query).await?;
-		let code = generate_rust_from_query(&descriptor, "example", query)?;
-		let content = rustfmt(&code.to_string())?;
-
-		insta::assert_snapshot!(content);
-
-		Ok(())
-	}
-
-	#[tokio::test]
-	async fn can_generate_content_with_args() -> Result<()> {
-		let query = "select Team {**} filter .name like <str>$starts_with ++ '%' and .description \
-		             like '%' ++ <str>$ends_with;";
-		let descriptor = get_descriptor(query).await?;
-		let code = generate_rust_from_query(&descriptor, "example", query)?;
-		let content = rustfmt(&code.to_string())?;
-
-		insta::assert_snapshot!(content);
-
-		Ok(())
-	}
-
-	#[tokio::test]
-	async fn can_generate_singular_content() -> Result<()> {
-		let query = "select Team {**} filter .name like <str>$starts_with ++ '%' and .description \
-		             like '%' ++ <str>$ends_with;";
-		let descriptor = get_descriptor(query).await?;
-		let code = generate_rust_from_query(&descriptor, "example", query)?;
-		let content = rustfmt(&code.to_string())?;
-
-		insta::assert_snapshot!(content);
-
-		Ok(())
-	}
-
-	#[test_log::test(tokio::test)]
-	async fn each_thing() -> Result<()> {
-		let query = "
-		select {
-		  my_string := RelationshipType.Follow,
-		  my_number := 42,
-		  several_numbers := {1, 2, 3},
-		  array := [1, 2, 3],
-		};";
-		let descriptor = get_descriptor(query).await?;
-		let code = generate_rust_from_query(&descriptor, "example", query)?;
-		let content = rustfmt(&code.to_string())?;
-
-		insta::assert_snapshot!(content);
-
-		Ok(())
-	}
-
-	#[test_log::test(tokio::test)]
-	async fn explore() -> Result<()> {
-		let descriptor = get_descriptor(TYPES_QUERY).await?;
-		let code = generate_rust_from_query(&descriptor, "example", TYPES_QUERY)?;
-		let content = rustfmt(&code.to_string())?;
-
-		insta::assert_snapshot!(content);
-
-		Ok(())
-	}
 }

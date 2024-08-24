@@ -1,12 +1,6 @@
 {
 	"useTabs": true,
 	"indentWidth": 2,
-	"typescript": {
-		"deno": true,
-		"useTabs": true,
-		"module.sortExportDeclarations": "caseInsensitive",
-		"module.sortImportDeclarations": "caseInsensitive"
-	},
 	"exec": {
 		"commands": [
 			{
@@ -21,13 +15,10 @@
 				]
 			},
 			{
-				"command": "prettier --plugin prettier-plugin-packagejson --plugin prettier-plugin-sql --tab-width {{indent_width}} --use-tabs {{use_tabs}} --print-width {{line_width}} --language postgresql --keyword-case lower --lines-between-queries 1 --stdin-filepath {{file_path}}",
+				"command": "yamlfmt -in -formatter indent={{indent_width}},max_line_length={{line_width}}",
 				"exts": [
-					"html",
-					"css",
 					"yml",
-					"yaml",
-					"sql"
+					"yaml"
 				]
 			},
 			{
@@ -48,7 +39,7 @@
 		"textWrap": "never"
 	},
 	"includes": [
-		"**/*.{ts,tsx,js,jsx,cjs,mjs,json,jsonc,md,toml,dockerfile,rs,yml,yaml,css,sql,sh,bash}"
+		"**/*.{ts,tsx,js,jsx,cjs,mjs,json,jsonc,md,toml,dockerfile,rs,yml,yaml,sh,bash}"
 	],
 	"excludes": [
 		"programs/.anchor",
@@ -67,7 +58,6 @@
 		"**/pkg/"
 	],
 	"plugins": [
-		"https://plugins.dprint.dev/typescript-0.91.6.wasm",
 		"https://plugins.dprint.dev/json-0.19.3.wasm",
 		"https://plugins.dprint.dev/markdown-0.17.5.wasm",
 		"https://plugins.dprint.dev/exec-0.5.0.json@8d9972eee71fa1590e04873540421f3eda7674d0f1aae3d7c788615e7b7413d0"

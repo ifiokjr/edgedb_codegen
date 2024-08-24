@@ -12,6 +12,7 @@
     pkgs.rustup
     pkgs.shfmt
     pkgs.taplo
+    pkgs.yamlfmt
   ] ++ lib.optionals pkgs.stdenv.isDarwin (with pkgs.darwin.apple_sdk; [
     pkgs.libiconv
     frameworks.Security
