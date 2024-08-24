@@ -1,8 +1,9 @@
+use edgedb_codegen::Result;
 use edgedb_macros::edgedb_query;
 use edgedb_tokio::create_client;
 
 #[tokio::test]
-pub async fn simple_query() -> anyhow::Result<()> {
+pub async fn simple_query() -> Result<()> {
 	let client = create_client().await?;
 	let input = simple::Input::builder()
 		.custom("This is a custom field")
@@ -25,7 +26,7 @@ pub async fn simple_query() -> anyhow::Result<()> {
 }
 
 #[tokio::test]
-pub async fn empty_set_query() -> anyhow::Result<()> {
+pub async fn empty_set_query() -> Result<()> {
 	let client = create_client().await?;
 	let output = empty::query(&client).await?;
 

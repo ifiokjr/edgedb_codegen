@@ -29,7 +29,6 @@ edgedb-tokio = { workspace = true, features = ["unstable", "derive"] }
 typed-builder = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 tokio = { workspace = true, features = ["time", "test-util"] }
-anyhow = { workspace = true }
 
 [lints]
 workspace = true

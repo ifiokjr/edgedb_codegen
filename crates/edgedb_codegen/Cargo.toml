@@ -9,7 +9,6 @@ repository.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-anyhow = { workspace = true }
 check_keyword = { workspace = true }
 edgedb-errors = { workspace = true }
 edgedb-protocol = { workspace = true, features = ["all-types", "with-serde"] }
@@ -27,6 +26,7 @@ typed-builder = { workspace = true }
 
 [dev-dependencies]
 serial_test = { workspace = true }
+rustversion = { workspace = true }
 uuid = { workspace = true }
 bytes = { workspace = true }
 trybuild = { workspace = true }

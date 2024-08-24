@@ -503,7 +503,6 @@ dependencies = [
 name = "edgedb_codegen"
 version = "0.0.0"
 dependencies = [
- "anyhow",
  "assert2",
  "bytes",
  "check_keyword",
@@ -517,6 +516,7 @@ dependencies = [
  "quote",
  "rstest",
  "rstest_reuse",
+ "rustversion",
  "serde",
  "serde_json",
  "serial_test",
@@ -533,7 +533,6 @@ dependencies = [
 name = "edgedb_macros"
 version = "0.0.0"
 dependencies = [
- "anyhow",
  "assert2",
  "edgedb-derive",
  "edgedb-errors",
@@ -1515,6 +1514,12 @@ dependencies = [
  "rustls-pki-types",
  "untrusted",
 ]
+
+[[package]]
+name = "rustversion"
+version = "1.0.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "955d28af4278de8121b7ebeb796b6a45735dc01436d898801014aced2773a3d6"
 
 [[package]]
 name = "ryu"

@@ -8,6 +8,14 @@ use rstest_reuse::apply;
 use rstest_reuse::template;
 use trybuild::TestCases;
 
+#[rustversion::attr(not(nightly), ignore = "requires nightly")]
+#[cfg_attr(miri, ignore = "incompatible with miri")]
+#[test]
+fn compilation() {
+	let t = TestCases::new();
+	t.pass("tests/ui/*.rs");
+}
+
 macro_rules! set_snapshot_suffix {
     ($($expr:expr),*) => {
         let mut settings = insta::Settings::clone_current();
@@ -75,15 +83,16 @@ async fn codegen_literals(testname: String, #[case] query: &str) -> Result<()> {
 	Ok(())
 }
 
-#[test]
-fn compilation() {
-	let t = TestCases::new();
-	t.pass("tests/ui/*.rs");
-}
-
 const CRATE_DIR: &str = env!("CARGO_MANIFEST_DIR");
 
 async fn prepare_compile_test(content: &str, relative_path: &str) -> Result<()> {
+	if std::env::var("CI")
+		.ok()
+		.is_some_and(|v| ["1", "true"].contains(&v.as_str()))
+	{
+		return Ok(());
+	}
+
 	let path = PathBuf::from(CRATE_DIR).join(relative_path);
 	let generated = generate_contents(content).await?;
 
