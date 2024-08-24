@@ -1,0 +1,7 @@
+error: unexpected end of input, expected identifier
+ --> tests/ui/no_args.rs:4:2
+  |
+4 |     edgedb_query!();
+  |     ^^^^^^^^^^^^^^^
+  |
+  = note: this error originates in the macro `edgedb_query` (in Nightly builds, run with -Z macro-backtrace for more info)

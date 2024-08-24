@@ -1,0 +1,58 @@
+---
+source: crates/edgedb_codegen/src/lib.rs
+expression: content
+---
+pub mod example {
+	#[cfg(feature = "query")]
+	pub async fn query(
+		client: &edgedb_tokio::Client,
+		props: Input,
+	) -> core::result::Result<Vec<Output>, edgedb_errors::Error> {
+		client
+			.query(
+				"select Team {**} filter .name like <str>$starts_with ++ '%' and .description \
+				 like '%' ++ <str>$ends_with;",
+				props,
+			)
+			.await
+	}
+	#[derive(Clone, Debug)]
+	#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+	#[cfg_attr(feature = "query", derive(edgedb_derive::Queryable))]
+	#[cfg_attr(feature = "builder", derive(typed_builder::TypedBuilder))]
+	struct Input {
+		#[cfg_attr(feature = "builder", builder(setter(into)))]
+		pub starts_with: String,
+		#[cfg_attr(feature = "builder", builder(setter(into)))]
+		pub ends_with: String,
+	}
+	impl edgedb_protocol::query_args::QueryArgs for Input {
+		fn encode(
+			&self,
+			encoder: &mut edgedb_protocol::query_arg::Encoder,
+		) -> core::result::Result<(), edgedb_errors::Error> {
+			let map = edgedb_protocol::named_args! { "starts_with" => self . starts_with . clone () , "ends_with" => self . ends_with . clone () , };
+			map.encode(encoder)
+		}
+	}
+	#[derive(Clone, Debug)]
+	#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+	#[cfg_attr(feature = "query", derive(edgedb_derive::Queryable))]
+	#[cfg_attr(feature = "builder", derive(typed_builder::TypedBuilder))]
+	struct Output {
+		#[cfg_attr(feature = "builder", builder(setter(into)))]
+		pub slug: String,
+		#[cfg_attr(feature = "builder", builder(setter(into)))]
+		pub id: uuid::Uuid,
+		#[cfg_attr(feature = "builder", builder(setter(into)))]
+		pub created_at: edgedb_protocol::model::DateTime,
+		#[cfg_attr(feature = "builder", builder(setter(into)))]
+		pub updated_at: edgedb_protocol::model::DateTime,
+		# [cfg_attr (feature = "builder" , builder (default , setter (into , strip_option = (fallback = description_opt))))]
+		pub description: Option<String>,
+		#[cfg_attr(feature = "builder", builder(setter(into)))]
+		pub name: String,
+		#[cfg_attr(feature = "builder", builder(default))]
+		pub wallets: Vec<OutputWallets>,
+	}
+}

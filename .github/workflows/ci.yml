@@ -1,5 +1,10 @@
 name: "ci"
 
+
+permissions:
+  pull-requests: write
+  contents: write
+
 on:
   push:
     branches:
@@ -10,7 +15,8 @@ on:
       - main
 
 env:
-  EDGEDB_INSTANCE: "generator"
+  EDGEDB_INSTANCE: "edgedb_codegen"
+  EDGEDB_BRANCH: "main"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -45,7 +51,9 @@ jobs:
         uses: ./.github/actions/devenv
 
       - name: test
-        run: cargo test_edgedb
+        run: |
+          cargo test_codegen
+          cargo test_macros
         shell: bash
 
   build:
@@ -61,3 +69,18 @@ jobs:
       - name: build
         run: cargo build
         shell: bash
+
+  release:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - name: setup Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: release
+        uses: MarcoIeni/release-plz-action@v0.5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}

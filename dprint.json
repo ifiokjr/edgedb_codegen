@@ -60,13 +60,10 @@
 		"**/fixtures",
 		"**/snapshots",
 		"**/target",
-		"**/node_modules",
 		"docs/book/**",
-		"apps/*/style/output.css",
 		".bin/",
 		".local-cache/",
 		"**/dist/**",
-		"apps/kickjump_native/src-tauri/gen/schemas/",
 		"**/pkg/"
 	],
 	"plugins": [

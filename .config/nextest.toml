@@ -135,10 +135,6 @@ failure-output = "immediate-final"
 # Do not cancel the test run on the first failure.
 fail-fast = false
 
-[[profile.default.overrides]]
-filter = 'test(/^kickjump_launchpad_client::integration/)'
-threads-required = 2
-
 [[profile.default.scripts]]
 filter = 'all()'
 setup = "default"

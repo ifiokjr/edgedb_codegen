@@ -1,0 +1,31 @@
+---
+source: crates/edgedb_codegen/src/lib.rs
+expression: content
+---
+pub mod example {
+	#[cfg(feature = "query")]
+	pub async fn query(
+		client: &edgedb_tokio::Client,
+	) -> core::result::Result<Output, edgedb_errors::Error> {
+		client
+			.query_required_single(
+				"\n\t\tselect {\n\t\t  my_string := RelationshipType.Follow,\n\t\t  my_number := \
+				 42,\n\t\t  several_numbers := {1, 2, 3},\n\t\t  array := [1, 2, 3],\n\t\t};",
+				&(),
+			)
+			.await
+	}
+	#[derive(Clone, Debug)]
+	#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+	#[cfg_attr(feature = "query", derive(edgedb_derive::Queryable))]
+	#[cfg_attr(feature = "builder", derive(typed_builder::TypedBuilder))]
+	struct Output {
+		#[cfg_attr(feature = "builder", builder(setter(into)))]
+		pub my_string: String,
+		#[cfg_attr(feature = "builder", builder(setter(into)))]
+		pub my_number: i64,
+		pub several_numbers: Vec<i64>,
+		#[cfg_attr(feature = "builder", builder(setter(into)))]
+		pub array: Vec<i64>,
+	}
+}

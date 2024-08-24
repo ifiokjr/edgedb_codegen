@@ -21,8 +21,8 @@
 <br />
 
 <p align="center">
-  <a href="https://github.com/kickjump/kickjump/actions?query=workflow:ci">
-    <img src="https://github.com/kickjump/kickjump/workflows/ci/badge.svg?branch=main" alt="Continuous integration badge for github actions" title="CI Badge" />
+  <a href="https://github.com/ifiokjr/edgedb_codegen/actions?query=workflow:ci">
+    <img src="https://github.com/ifiokjr/edgedb_codegen/workflows/ci/badge.svg?branch=main" alt="Continuous integration badge for github actions" title="CI Badge" />
   </a>
 </p>
 
@@ -66,7 +66,7 @@ nix profile install --accept-flake-config github:cachix/devenv/<version>
 
 ### Editor Setup
 
-To setup recommended configuration for your favourite editor run the following commands.
+To setup recommended configuration for your favorite editor run the following commands.
 
 ```bash
 setup:vscode # Setup vscode
@@ -75,17 +75,3 @@ setup:vscode # Setup vscode
 ## License
 
 BSD 3-Clause, see the [LICENSE](./LICENSE) file.
-
-## Thoughts
-
-Open source products are public goods.
-
-Public goods should be publicly auditable.
-
-The blockchain is designed for providing a solution to these constraints.
-
-Funds can be raised and then audited directly by the community.
-
-Funds which are misappropriated can lead to a fork of the project which will diminish the desirability of the original project.
-
-This does leave the possibility open for reputation attacks.

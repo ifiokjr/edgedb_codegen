@@ -5,18 +5,15 @@
     pkgs.cargo-binstall
     pkgs.cargo-run-bin
     pkgs.coreutils
-    pkgs.curl
     pkgs.dprint
     pkgs.edgedb
-    pkgs.fnm
-    pkgs.jq
-    pkgs.libiconv # needed for prisma to run
     pkgs.nil
     pkgs.nixpkgs-fmt
     pkgs.rustup
     pkgs.shfmt
     pkgs.taplo
   ] ++ lib.optionals pkgs.stdenv.isDarwin (with pkgs.darwin.apple_sdk; [
+    pkgs.libiconv
     frameworks.Security
     frameworks.System
   ]);
@@ -31,11 +28,22 @@
   scripts."install:cargo:bin".exec = ''
     cargo bin --install
   '';
+  scripts."db:destroy".exec = ''
+    set -e
+    edgedb instance destroy -I $EDGEDB_INSTANCE --non-interactive --force
+  '';
+  scripts."db:setup".exec = ''
+    set -e
+    edgedb instance create --non-interactive $EDGEDB_INSTANCE $EDGEDB_BRANCH || true
+    edgedb instance start --instance $EDGEDB_INSTANCE
+  '';
+  scripts."db:up".exec = ''
+    set -e
+    edgedb watch --instance $EDGEDB_INSTANCE
+  '';
   scripts."update:deps".exec = ''
     set -e
     cargo update
-    pnpm update --latest --recursive -i
-    copy:public
   '';
   scripts."fix:all".exec = ''
     set -e
@@ -73,17 +81,6 @@
     set -e
     pnpm eslint .
   '';
-  scripts."snapshot:review".exec = ''
-    cargo insta review
-  '';
-  scripts."snapshot:update".exec = ''
-    cargo nextest run
-    cargo insta accept
-  '';
-  scripts."test:docs".exec = ''
-    set -e
-    cargo test --doc
-  '';
   scripts."setup:vscode".exec = ''
     set -e
     rm -rf .vscode
@@ -98,10 +95,6 @@
     set -e
     # update github ci path
     echo "$DEVENV_PROFILE/bin" >> $GITHUB_PATH
-    echo "$GITHUB_WORKSPACE/node_modules/.bin" >> $GITHUB_PATH
-    echo "$GITHUB_WORKSPACE/.local-cache/solana-release/bin" >> $GITHUB_PATH
-    echo "$GITHUB_WORKSPACE/.local-cache/pulumi" >> $GITHUB_PATH
-    echo "$GITHUB_WORKSPACE/.local-cache/esc" >> $GITHUB_PATH
 
     # update github ci environment
     echo "DEVENV_PROFILE=$DEVENV_PROFILE" >> $GITHUB_ENV
@@ -120,30 +113,11 @@
     echo "DEVENV_PROFILE=$DEVENV_PROFILE" >> $GITHUB_ENV
     echo "DEVENV_ROOT=$DEVENV_ROOT" >> $GITHUB_ENV
     echo "DEVENV_STATE=$DEVENV_STATE" >> $GITHUB_ENV
-
-    fnm_env=$(fnm env --json)
-
-    # Parse the JSON file contents
-    PARSED_FNM_ENV=$(jq -r '.' <<< "$fnm_env")
-    FNM_MULTISHELL_PATH=$(jq -r '.FNM_MULTISHELL_PATH' <<< "$PARSED_FNM_ENV")
-
-    # Add fnm to the path
-    echo "$FNM_MULTISHELL_PATH/bin" >> $GITHUB_PATH
-
-    # add fnm environment variables
-    for key in $(jq -r 'keys[]' <<< "$PARSED_FNM_ENV"); do
-      value=$(jq -r ".$key" <<< "$PARSED_FNM_ENV")
-      echo "$key=$value" >> $GITHUB_ENV
-    done
   '';
   scripts."setup:docker".exec = ''
     set -e
     # update path
     echo "export PATH=$DEVENV_PROFILE/bin:\$PATH" >> /etc/profile
-    echo "export PATH=$DEVENV_ROOT/node_modules/.bin:\$PATH" >> /etc/profile
-    echo "export PATH=$DEVENV_ROOT/.local-cache/solana-release/bin:\$PATH" >> /etc/profile
-    echo "export PATH=$DEVENV_ROOT/.local-cache/pulumi:\$PATH" >> /etc/profile
-    echo "export PATH=$DEVENV_ROOT/.local-cache/esc:\$PATH" >> /etc/profile
 
     echo "export DEVENV_PROFILE=$DEVENV_PROFILE" >> /etc/profile
     echo "export PKG_CONFIG_PATH=$PKG_CONFIG_PATH" >> /etc/profile
@@ -157,20 +131,5 @@
     echo "export DEVENV_PROFILE=$DEVENV_PROFILE" >> /etc/profile
     echo "export DEVENV_ROOT=$DEVENV_ROOT" >> /etc/profile
     echo "export DEVENV_STATE=$DEVENV_STATE" >> /etc/profile
-
-    fnm_env=$(fnm env --json)
-
-    # Parse the JSON file contents
-    PARSED_FNM_ENV=$(jq -r '.' <<< "$fnm_env")
-    FNM_MULTISHELL_PATH=$(jq -r '.FNM_MULTISHELL_PATH' <<< "$PARSED_FNM_ENV")
-
-    # add fnm to the path
-    echo "export PATH=$FNM_MULTISHELL_PATH/bin:\$PATH" >> /etc/profile
-
-    # add fnm environment variables
-    for key in $(jq -r 'keys[]' <<< "$PARSED_FNM_ENV"); do
-      value=$(jq -r ".$key" <<< "$PARSED_FNM_ENV")
-      echo "export $key=$value" >> /etc/profile
-    done
   '';
 }

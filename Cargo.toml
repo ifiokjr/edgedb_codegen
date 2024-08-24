@@ -8,7 +8,7 @@ authors = ["Ifiok Jr. <ifiokotung@gmail.com>"]
 edition = "2021"
 homepage = "https://edgedb.com"
 license = "Unlicense"
-repository = "https://github.com/ifiokjr/edgedb_generator"
+repository = "https://github.com/ifiokjr/edgedb_codegen"
 rust-version = "1.71.0"
 
 [workspace.lints.rust]
@@ -95,10 +95,12 @@ test-log = "0.2"
 thiserror = "1"
 tokio = "1"
 tracing = "0.1"
-typed-builder = "0.19"
+trybuild = "1"
+typed-builder = "0.20"
 
 # crates
-edgedb_generator = { path = "./crates/edgedb_generator", version = "0.0.0" }
+edgedb_codegen = { path = "./crates/edgedb_codegen", version = "0.0.0" }
+edgedb_macros = { path = "./crates/edgedb_macros", version = "0.0.0" }
 
 [workspace.metadata.bin]
 cargo-insta = { version = "1.39.0" }

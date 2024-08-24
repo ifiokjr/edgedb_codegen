@@ -1,5 +1,5 @@
 [package]
-name = "edgedb_generator"
+name = "edgedb_codegen"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -10,6 +10,7 @@ rust-version.workspace = true
 
 [dependencies]
 anyhow = { workspace = true }
+thiserror = { workspace = true }
 check_keyword = { workspace = true }
 edgedb-errors = { workspace = true }
 edgedb-protocol = { workspace = true, features = ["all-types", "with-serde"] }
@@ -22,6 +23,7 @@ serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 syn = { workspace = true }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+typed-builder = { workspace = true }
 
 [dev-dependencies]
 assert2 = { workspace = true }
@@ -35,4 +37,5 @@ workspace = true
 
 [features]
 serde = []
-format = []
+query = []
+builder = []

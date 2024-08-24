@@ -24,7 +24,6 @@ devenv.local.nix
 **/temp**.bin/
 node_modules/
 /.bin/
-/.local-cache/
 /.sass-cache/
 /.test-results/
 /test-results/
@@ -47,9 +46,3 @@ node_modules/
 
 **/*.pem
 
-# tests
-/.playwright-state
-/playwright-report
-/test-ledger
-/test-results
-/apps/kickjump/e2e/extensions
