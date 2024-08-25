@@ -1,6 +1,6 @@
 # `edgedb_codegen`
 
-> Generate fully typed rust code from your edgedb schema and inline / file-based queries.
+> Generate fully typed rust code from your EdgeDB schema and inline queries.
 
 [![Crate][crate-image]][crate-link] [![Docs][docs-image]][docs-link] [![Status][ci-status-image]][ci-status-link] [![Unlicense][unlicense-image]][unlicense-link]
 
@@ -28,7 +28,7 @@ Fortunately, `edgedb` has a query language that is typed and can be converted in
 
 ```rust
 use edgedb_codegen::edgedb_query;
-use edgedb_errors::Result;
+use edgedb_errors::Error;
 use edgedb_tokio::create_client;
 
 // Creates a module called `simple` with a function called `query` and structs
@@ -38,8 +38,8 @@ edgedb_query!(
 	"select {hello := \"world\", custom := <str>$custom }"
 );
 
-#[toko::main]
-async fn main() -> Result<()> {
+#[tokio::main]
+async fn main() -> Result<(), Error> {
 	let client = create_client().await?;
 	let input = simple::Input::builder().custom("custom").build();
 
@@ -70,26 +70,29 @@ Then use the `edgedb_query` macro to import the query.
 
 ```rust
 use edgedb_codegen::edgedb_query;
+use edgedb_errors::Error;
 use edgedb_tokio::create_client;
 
 // Creates a module called `select_user` with public functions `transaction` and
 // `query` as well as structs for the `Input` and `Output`.
 edgedb_query!(select_user);
 
-#[toko::main]
-async fn main() -> Result<()> {
+#[tokio::main]
+async fn main() -> Result<(), Error> {
 	let client = create_client().await?;
-	let input = select_user::Input::builder().slug("test").build();
 
 	// Generated code can be run inside a transaction.
 	let result = client
 		.transaction(|mut txn| {
 			async move {
-				let output = select_user::transaction(&mut txn).await?;
+				let input = select_user::Input::builder().slug("test").build();
+				let output = select_user::transaction(&mut txn, &input).await?;
 				Ok(output)
 			}
 		})
 		.await?;
+
+	Ok(())
 }
 ```
 

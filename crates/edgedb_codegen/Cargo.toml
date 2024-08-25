@@ -2,7 +2,7 @@
 name = "edgedb_codegen"
 readme = "readme.md"
 categories = ["database"]
-keywords = ["edgedb", "database", "typesafe", "checked"]
+keywords = ["edgedb", "database", "typesafe", "checked", "macros"]
 version = { workspace = true }
 authors = { workspace = true }
 edition = { workspace = true }
@@ -10,7 +10,7 @@ homepage = { workspace = true }
 license = { workspace = true }
 repository = { workspace = true }
 rust-version = { workspace = true }
-description = "Generates fully typed rust code from an edgedb schema and inline / file-based queries."
+description = "Generate fully typed rust code from your EdgeDB schema and inline queries."
 
 [dependencies]
 bigdecimal = { workspace = true, optional = true }
