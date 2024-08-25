@@ -55,13 +55,6 @@ runs:
         key: ${{ runner.os }}-cargo-bin-${{ hashFiles('rust-toolchain.toml') }}
         restore-keys: |
           ${{ runner.os }}-cargo-bin-
-    - name: cache local binaries
-      uses: actions/cache@v4
-      with:
-        path: ./.local-cache
-        key: ${{ runner.os }}-local-cache-${{ hashFiles('setup/cache-versions.json') }}
-        restore-keys: |
-          ${{ runner.os }}-local-cache-
     - name: get pnpm store directory
       id: pnpm-cache
       run: echo "store=$(pnpm store path)" >> $GITHUB_OUTPUT
