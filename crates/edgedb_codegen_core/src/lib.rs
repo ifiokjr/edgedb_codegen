@@ -37,7 +37,6 @@ use edgedb_tokio::create_client;
 use edgedb_tokio::raw::Pool;
 use edgedb_tokio::raw::PoolState;
 use edgedb_tokio::Builder;
-use heck::ToKebabCase;
 use heck::ToPascalCase;
 use heck::ToSnakeCase;
 use proc_macro2::TokenStream;
@@ -97,7 +96,7 @@ pub fn generate_rust_from_query(
 	let query_prop_ident = format_ident!("{QUERY_PROP_NAME}");
 	let transaction_ident = format_ident!("{TRANSACTION_NAME}");
 	let transaction_prop_ident = format_ident!("{TRANSACTION_PROP_NAME}");
-	let kebab_name: syn::Ident = syn::parse_str(&name.to_kebab_case())?;
+	let module_name: syn::Ident = format_ident!("{}", name.to_snake_case());
 	let input = descriptor.input.decode()?;
 	let output = descriptor.output.decode()?;
 	let mut tokens: TokenStream = TokenStream::new();
@@ -145,7 +144,7 @@ pub fn generate_rust_from_query(
 	}
 
 	let token_stream = quote! {
-		pub mod #kebab_name {
+		pub mod #module_name {
 			use ::edgedb_codegen::exports as #EXPORTS_IDENT;
 
 			/// Execute the desired query.

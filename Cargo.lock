@@ -553,6 +553,7 @@ dependencies = [
  "insta",
  "num-bigint",
  "num-traits",
+ "proc-macro2",
  "rstest",
  "rustversion",
  "serde",

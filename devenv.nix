@@ -37,6 +37,7 @@
     set -e
     edgedb instance create --non-interactive $EDGEDB_INSTANCE $EDGEDB_BRANCH || true
     edgedb instance start --instance $EDGEDB_INSTANCE
+    edgedb migrate
   '';
   scripts."db:up".exec = ''
     set -e

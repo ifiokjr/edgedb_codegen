@@ -1,3 +1,4 @@
+#![doc = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/readme.md"))]
 #![doc = document_features::document_features!()]
 
 /// Generates a query module from a query string.
@@ -7,10 +8,25 @@
 ///
 /// edgedb_query!(get_users, "select User {**}");
 /// ```
+///
+/// This macro can be called with one argument if in the root of your crate you
+/// host a folder named `queries`.
+///
+/// ```rust
+/// use edgedb_codegen::edgedb_query;
+///
+/// edgedb_query!(insert_user);
+/// ```
+///
+/// The above code will find the file `<CRATE_ROOT>/queries/insert_user.edgeql`
+/// and run the query from there.
 #[macro_export]
 macro_rules! edgedb_query {
 	($module:ident, $query:literal) => {
-		$crate::exports::edgedb_codegen_macros::edgedb_query!($module, $query);
+		$crate::exports::edgedb_codegen_macros::edgedb_query_raw!($module, query: $query);
+	};
+	($module: ident) => {
+		$crate::exports::edgedb_codegen_macros::edgedb_query_raw!($module);
 	};
 }
 
@@ -25,7 +41,7 @@ macro_rules! edgedb_query {
 #[macro_export]
 macro_rules! edgedb_query_file {
 	($module:ident, $path:literal) => {
-		$crate::exports::edgedb_codegen_macros::edgedb_query!($module, include_str!($path));
+		$crate::exports::edgedb_codegen_macros::edgedb_query_raw!($module, file: $path);
 	};
 }
 

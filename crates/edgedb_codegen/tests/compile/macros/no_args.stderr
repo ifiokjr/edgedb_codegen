@@ -1,7 +1,11 @@
-error: unexpected end of input, expected identifier
+error: unexpected end of macro invocation
  --> tests/compile/macros/no_args.rs:4:2
   |
 4 |     edgedb_query!();
-  |     ^^^^^^^^^^^^^^^
+  |     ^^^^^^^^^^^^^^^ missing tokens in macro arguments
   |
-  = note: this error originates in the macro `edgedb_query` (in Nightly builds, run with -Z macro-backtrace for more info)
+note: while trying to match meta-variable `$module:ident`
+ --> src/lib.rs
+  |
+  |     ($module:ident, $query:literal) => {
+  |      ^^^^^^^^^^^^^

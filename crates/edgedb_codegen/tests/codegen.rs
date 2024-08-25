@@ -2,6 +2,7 @@ use std::path::PathBuf;
 use std::thread;
 
 use edgedb_codegen_core::*;
+use proc_macro2::Span;
 use rstest::fixture;
 use rstest::rstest;
 
@@ -56,16 +57,40 @@ pub fn testname() -> String {
 #[tokio::test]
 async fn codegen_literals(testname: String, #[case] query: &str) -> Result<()> {
 	set_snapshot_suffix!("{}", testname);
+
 	let relative_path = format!("tests/compile/codegen/{testname}.rs");
 	let descriptor = get_descriptor(query).await?;
 	let code = generate_rust_from_query(&descriptor, "example", query)?;
 	let content = rustfmt(&code.to_string()).await?;
 
+	// Check that the snapshot hasn't changed.
+	insta::assert_snapshot!(&content);
+
 	// Ensure that the produced rust is valid.
 	prepare_compile_test(&content, &relative_path).await?;
 
+	Ok(())
+}
+
+#[rstest]
+#[case("insert_user")]
+#[case("remove_user")]
+#[tokio::test]
+async fn codegen_files(#[case] path: &str) -> Result<()> {
+	set_snapshot_suffix!("{}", path);
+
+	let query_path = resolve_path(format!("queries/{path}.edgeql"), Span::call_site())?;
+	let relative_path = format!("tests/compile/codegen/{path}.rs");
+	let query = tokio::fs::read_to_string(&query_path).await?;
+	let descriptor = get_descriptor(&query).await?;
+	let code = generate_rust_from_query(&descriptor, "example", &query)?;
+	let content = rustfmt(&code.to_string()).await?;
+
 	// Check that the snapshot hasn't changed.
 	insta::assert_snapshot!(&content);
+
+	// Ensure that the produced rust is valid.
+	prepare_compile_test(&content, &relative_path).await?;
 
 	Ok(())
 }
@@ -73,26 +98,22 @@ async fn codegen_literals(testname: String, #[case] query: &str) -> Result<()> {
 const CRATE_DIR: &str = env!("CARGO_MANIFEST_DIR");
 
 async fn prepare_compile_test(content: &str, relative_path: &str) -> Result<()> {
-	if std::env::var("CI")
+	let is_ci = std::env::var("CI")
 		.ok()
-		.is_some_and(|v| ["1", "true"].contains(&v.as_str()))
-	{
-		return Ok(());
-	}
+		.is_some_and(|v| ["1", "true"].contains(&v.as_str()));
 
 	let path = PathBuf::from(CRATE_DIR).join(relative_path);
 	let generated = generate_contents(content).await?;
 
-	match tokio::fs::read_to_string(&path).await {
-		Ok(current) => {
-			if current != generated {
-				tokio::fs::write(&path, generated).await?;
-			}
-		}
-		Err(_) => {
-			tokio::fs::write(&path, generated).await?;
-		}
+	let should_update = match tokio::fs::read_to_string(&path).await {
+		Ok(current) => current != generated,
+		Err(_) => true,
 	};
+
+	if should_update {
+		assert2::assert!(!is_ci, "attempted updating compilation tests in CI");
+		tokio::fs::write(&path, generated).await?;
+	}
 
 	Ok(())
 }
