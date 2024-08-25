@@ -28,18 +28,26 @@ Fortunately, `edgedb` has a query language that is typed and can be converted in
 
 ```rust
 use edgedb_codegen::edgedb_query;
-use edgedb_errors::Result;
+use edgedb_errors::Error;
 use edgedb_tokio::create_client;
 
 // Creates a module called `simple` with a function called `query` and structs
 // for the `Input` and `Output`.
-edgedb_query!(simple, "select {hello := \"world\", custom := <str>$custom }");
+edgedb_query!(
+	simple,
+	"select {hello := \"world\", custom := <str>$custom }"
+);
 
-let client = create_client().await?;
-let input = simple::Input::builder().custom("custom").build();
+#[tokio::main]
+async fn main() -> Result<(), Error> {
+	let client = create_client().await?;
+	let input = simple::Input::builder().custom("custom").build();
 
-// For queries the following code can be used.
-let output = simple::query(&client).await?;
+	// For queries the following code can be used.
+	let output = simple::query(&client, &input).await?;
+
+	Ok(())
+}
 ```
 
 This macro will generate the following code:
@@ -62,23 +70,30 @@ Then use the `edgedb_query` macro to import the query.
 
 ```rust
 use edgedb_codegen::edgedb_query;
+use edgedb_errors::Error;
 use edgedb_tokio::create_client;
-
 
 // Creates a module called `select_user` with public functions `transaction` and
 // `query` as well as structs for the `Input` and `Output`.
 edgedb_query!(select_user);
 
-let client = create_client().await?;
-let input = select_user::Input::builder().slug("test").build();
+#[tokio::main]
+async fn main() -> Result<(), Error> {
+	let client = create_client().await?;
 
-// Generated code can be run inside a transaction.
-let result = client.transaction(|mut txn| {
-	async move {
-		let output = select_user::transaction(&mut txn).await?;
-		Ok(output)
-	}
-}).await?;
+	// Generated code can be run inside a transaction.
+	let result = client
+		.transaction(|mut txn| {
+			async move {
+				let input = select_user::Input::builder().slug("test").build();
+				let output = select_user::transaction(&mut txn, &input).await?;
+				Ok(output)
+			}
+		})
+		.await?;
+
+	Ok(())
+}
 ```
 
 [crate-image]: https://img.shields.io/crates/v/edgedb_codegen.svg

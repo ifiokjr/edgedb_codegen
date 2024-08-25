@@ -5,4 +5,7 @@ nextest = ["bin", "cargo-nextest"]
 insta = ["bin", "cargo-insta"]
 leptos = ["bin", "cargo-leptos"]
 mutants = ["bin", "cargo-mutants"]
+
+#testing
 test_codegen = ["nextest", "run", "--features", "serde,query"]
+test_docs = ["test", "--doc", "--features", "serde,query"]

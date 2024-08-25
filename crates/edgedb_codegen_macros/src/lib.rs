@@ -10,10 +10,20 @@ use syn::Token;
 
 /// Generates a query module from a query string.
 ///
-/// ```rust
+/// It supports inline code:
+///
+/// ```ignore
 /// use edgedb_codegen_macros::edgedb_query_raw;
 ///
-/// edgedb_query_raw!(get_users, "select User {**}");
+/// edgedb_query_raw!(get_users, query: "select User {**}");
+/// ```
+///
+/// It also supports file-based queries:
+///
+/// ```ignore
+/// use edgedb_codegen_macros::edgedb_query_raw;
+///
+/// edgedb_query_raw!(insert_user, file: "../edgedb_codegen/queries/insert_user.edgeql");
 /// ```
 #[proc_macro]
 pub fn edgedb_query_raw(input: TokenStream) -> TokenStream {

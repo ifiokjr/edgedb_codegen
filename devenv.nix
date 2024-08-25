@@ -73,6 +73,11 @@
     set -e
     cargo clippy --all-features
   '';
+  scripts."test:all".exec = ''
+    set -e
+    cargo test_codegen
+    cargo test_docs
+  '';
   scripts."setup:vscode".exec = ''
     set -e
     rm -rf .vscode

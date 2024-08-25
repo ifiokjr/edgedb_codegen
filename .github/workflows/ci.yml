@@ -39,9 +39,7 @@ jobs:
       - name: setup
         uses: ./.github/actions/devenv
       - name: test
-        run: |
-          cargo test_codegen
-          cargo test_macros
+        run: test:all
         shell: bash
   build:
     timeout-minutes: 15

@@ -1,6 +1,6 @@
 # `edgedb_codegen`
 
-> Generate fully typed rust code from an edgedb schema and inline / file-based queries.
+> Generate fully typed rust code from your edgedb schema and inline / file-based queries.
 
 [![Crate][crate-image]][crate-link] [![Docs][docs-image]][docs-link] [![Status][ci-status-image]][ci-status-link] [![Unlicense][unlicense-image]][unlicense-link]
 
@@ -33,13 +33,21 @@ use edgedb_tokio::create_client;
 
 // Creates a module called `simple` with a function called `query` and structs
 // for the `Input` and `Output`.
-edgedb_query!(simple, "select {hello := \"world\", custom := <str>$custom }");
+edgedb_query!(
+	simple,
+	"select {hello := \"world\", custom := <str>$custom }"
+);
 
-let client = create_client().await?;
-let input = simple::Input::builder().custom("custom").build();
+#[toko::main]
+async fn main() -> Result<()> {
+	let client = create_client().await?;
+	let input = simple::Input::builder().custom("custom").build();
 
-// For queries the following code can be used.
-let output = simple::query(&client).await?;
+	// For queries the following code can be used.
+	let output = simple::query(&client, &input).await?;
+
+	Ok(())
+}
 ```
 
 This macro will generate the following code:
@@ -64,21 +72,25 @@ Then use the `edgedb_query` macro to import the query.
 use edgedb_codegen::edgedb_query;
 use edgedb_tokio::create_client;
 
-
 // Creates a module called `select_user` with public functions `transaction` and
 // `query` as well as structs for the `Input` and `Output`.
 edgedb_query!(select_user);
 
-let client = create_client().await?;
-let input = select_user::Input::builder().slug("test").build();
+#[toko::main]
+async fn main() -> Result<()> {
+	let client = create_client().await?;
+	let input = select_user::Input::builder().slug("test").build();
 
-// Generated code can be run inside a transaction.
-let result = client.transaction(|mut txn| {
-	async move {
-		let output = select_user::transaction(&mut txn).await?;
-		Ok(output)
-	}
-}).await?;
+	// Generated code can be run inside a transaction.
+	let result = client
+		.transaction(|mut txn| {
+			async move {
+				let output = select_user::transaction(&mut txn).await?;
+				Ok(output)
+			}
+		})
+		.await?;
+}
 ```
 
 ## Contributing
