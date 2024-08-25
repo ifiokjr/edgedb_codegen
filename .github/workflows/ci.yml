@@ -63,13 +63,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test]
     steps:
+      - name: setup rust
+        uses: dtolnay/rust-toolchain@stable
       - name: checkout
         uses: actions/checkout@v4
-      - name: setup
-        uses: ./.github/actions/devenv
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          nix-cache: /tmp/nixcache
       - name: release
         uses: MarcoIeni/release-plz-action@v0.5
         env:
