@@ -1,12 +1,16 @@
 [package]
 name = "edgedb_codegen_core"
-version.workspace = true
-authors.workspace = true
-edition.workspace = true
-homepage.workspace = true
-license.workspace = true
-repository.workspace = true
-rust-version.workspace = true
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+homepage = { workspace = true }
+license = { workspace = true }
+repository = { workspace = true }
+rust-version = { workspace = true }
+readme = "readme.md"
+categories = ["database"]
+keywords = ["edgedb", "database", "typesafe", "checked", "macros"]
+description = "Utilities for codegen in the `edgedb_codegen` crate."
 
 [dependencies]
 check_keyword = { workspace = true }
@@ -22,11 +26,11 @@ thiserror = { workspace = true }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread", "process"] }
 typed-builder = { workspace = true }
 
-[lints]
-workspace = true
-
 [features]
 with_bigint = []
 with_bigdecimal = []
 with_chrono = []
 with_all = ["with_bigint", "with_bigdecimal", "with_chrono"]
+
+[lints]
+workspace = true

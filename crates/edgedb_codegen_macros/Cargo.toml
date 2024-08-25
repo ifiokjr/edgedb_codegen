@@ -1,12 +1,16 @@
 [package]
 name = "edgedb_codegen_macros"
-version.workspace = true
-authors.workspace = true
-edition.workspace = true
-homepage.workspace = true
-license.workspace = true
-repository.workspace = true
-rust-version.workspace = true
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+homepage = { workspace = true }
+license = { workspace = true }
+repository = { workspace = true }
+rust-version = { workspace = true }
+readme = "readme.md"
+categories = ["database"]
+keywords = ["edgedb", "database", "typesafe", "checked", "macros"]
+description = "The proc-macro crate for the `edgedb_codegen` crate."
 
 [lib]
 proc-macro = true
@@ -17,9 +21,6 @@ proc-macro2 = { workspace = true }
 quote = { workspace = true }
 syn = { workspace = true }
 
-[lints]
-workspace = true
-
 [features]
 with_bigint = ["edgedb_codegen_core/with_bigint"]
 with_bigdecimal = ["edgedb_codegen_core/with_bigdecimal"]
@@ -27,3 +28,6 @@ with_chrono = ["edgedb_codegen_core/with_chrono"]
 with_all = ["edgedb_codegen_core/with_all"]
 serde = []
 query = []
+
+[lints]
+workspace = true

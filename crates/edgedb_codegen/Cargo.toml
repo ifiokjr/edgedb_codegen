@@ -1,8 +1,5 @@
 [package]
 name = "edgedb_codegen"
-readme = "readme.md"
-categories = ["database"]
-keywords = ["edgedb", "database", "typesafe", "checked", "macros"]
 version = { workspace = true }
 authors = { workspace = true }
 edition = { workspace = true }
@@ -10,6 +7,9 @@ homepage = { workspace = true }
 license = { workspace = true }
 repository = { workspace = true }
 rust-version = { workspace = true }
+readme = "readme.md"
+categories = ["database"]
+keywords = ["edgedb", "database", "typesafe", "checked", "macros"]
 description = "Generate fully typed rust code from your EdgeDB schema and inline queries."
 
 [dependencies]
@@ -40,13 +40,13 @@ test-log = { workspace = true, features = ["log", "trace"] }
 tokio = { workspace = true, features = ["time", "test-util", "fs"] }
 trybuild = { workspace = true }
 
-[lints]
-workspace = true
-
 [features]
 
 #! ### Default
-#! By default all types are included.
+
+#! By default all additional types are included.
+
+## The default feature is `with_all`.
 default = ["with_all"]
 
 #! ### Types
@@ -70,6 +70,8 @@ with_bigdecimal = [
 
 ## Use the `chrono` crate for all dates.
 with_chrono = ["edgedb_codegen_macros/with_chrono", "dep:chrono", "edgedb-protocol/with-chrono"]
+
+## Include all additional types. This is included by default. Use `default-features = false` to disable.
 with_all = [
 	"edgedb_codegen_macros/with_all",
 	"with_bigint",
@@ -77,6 +79,8 @@ with_all = [
 	"with_chrono",
 	"edgedb-protocol/all-types",
 ]
+
+#! ### Behavior
 
 ## Enable serde for the generated code.
 serde = [
@@ -88,7 +92,10 @@ serde = [
 	"chrono/serde",
 ]
 
-## This turns on the `query` and `transaction` methods and anything that relies on `edgedb-tokio`.
+## Turns on the `query` and `transaction` methods and anything that relies on `edgedb-tokio`.
 ## The reason to seperate this feature is to enable usage of this macro in browser environments
 ## where `edgedb-tokio` is not available.
 query = ["edgedb_codegen_macros/query", "dep:edgedb-tokio"]
+
+[lints]
+workspace = true
