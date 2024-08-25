@@ -50,7 +50,6 @@
   scripts."fix:all".exec = ''
     set -e
     fix:clippy
-    fix:es
     fix:format
   '';
   scripts."fix:format".exec = ''
@@ -61,14 +60,9 @@
     set -e
     cargo clippy --fix --allow-dirty --allow-staged --all-features
   '';
-  scripts."fix:es".exec = ''
-    set -e
-    pnpm eslint --fix .
-  '';
   scripts."lint:all".exec = ''
     set -e
     lint:clippy
-    lint:es
     lint:format
   '';
   scripts."lint:format".exec = ''
@@ -78,10 +72,6 @@
   scripts."lint:clippy".exec = ''
     set -e
     cargo clippy --all-features
-  '';
-  scripts."lint:es".exec = ''
-    set -e
-    pnpm eslint .
   '';
   scripts."setup:vscode".exec = ''
     set -e

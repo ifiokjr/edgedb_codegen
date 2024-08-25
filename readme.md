@@ -1,6 +1,6 @@
 # `edgedb_codegen`
 
-> Generates fully typed rust code from an edgedb schema and inline / file-based queries.
+> Generate fully typed rust code from an edgedb schema and inline / file-based queries.
 
 [![Crate][crate-image]][crate-link] [![Docs][docs-image]][docs-link] [![Status][ci-status-image]][ci-status-link] [![Unlicense][unlicense-image]][unlicense-link]
 

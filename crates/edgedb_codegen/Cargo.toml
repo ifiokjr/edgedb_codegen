@@ -1,35 +1,39 @@
 [package]
 name = "edgedb_codegen"
-version.workspace = true
-authors.workspace = true
-edition.workspace = true
-homepage.workspace = true
-license.workspace = true
-repository.workspace = true
-rust-version.workspace = true
+readme = "readme.md"
+categories = ["database"]
+keywords = ["edgedb", "database", "typesafe", "checked"]
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+homepage = { workspace = true }
+license = { workspace = true }
+repository = { workspace = true }
+rust-version = { workspace = true }
+description = "Generates fully typed rust code from an edgedb schema and inline / file-based queries."
 
 [dependencies]
+bigdecimal = { workspace = true, optional = true }
 bytes = { workspace = true }
+chrono = { workspace = true, optional = true }
 document-features = { workspace = true }
 edgedb-derive = { workspace = true }
 edgedb-errors = { workspace = true }
 edgedb-protocol = { workspace = true, features = ["all-types"] }
 edgedb-tokio = { workspace = true, features = ["unstable", "derive"], optional = true }
 edgedb_codegen_macros = { workspace = true }
+num-bigint = { workspace = true, optional = true }
+num-traits = { workspace = true, optional = true }
 serde = { workspace = true, features = ["derive"], optional = true }
 serde_bytes = { workspace = true, optional = true }
 typed-builder = { workspace = true }
 uuid = { workspace = true }
-chrono = { workspace = true, optional = true }
-num-bigint = { workspace = true, optional = true }
-num-traits = { workspace = true, optional = true }
-bigdecimal = { workspace = true, optional = true }
 
 [dev-dependencies]
-proc-macro2 = { workspace = true }
 assert2 = { workspace = true }
 edgedb_codegen_core = { workspace = true, features = ["with_all"] }
 insta = { workspace = true, features = ["ron", "yaml", "redactions"] }
+proc-macro2 = { workspace = true }
 rstest = { workspace = true }
 rustversion = { workspace = true }
 test-log = { workspace = true, features = ["log", "trace"] }
@@ -84,5 +88,7 @@ serde = [
 	"chrono/serde",
 ]
 
-## This turns on the `query` and `transaction` methods and anything that relies on `edgedb-tokio`. The reason to seperate this feature is to enable usage of this macro in browser environments.
+## This turns on the `query` and `transaction` methods and anything that relies on `edgedb-tokio`.
+## The reason to seperate this feature is to enable usage of this macro in browser environments
+## where `edgedb-tokio` is not available.
 query = ["edgedb_codegen_macros/query", "dep:edgedb-tokio"]
