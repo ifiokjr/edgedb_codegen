@@ -6,7 +6,7 @@
 
 <br />
 
-[![Crate][crate-image]][crate-link] [![Docs][docs-image]][docs-link] [![Status][ci-status-image]][ci-status-link] [![Unlicense][unlicense-image]][unlicense-link]
+[![Crate][crate-image]][crate-link] [![Docs][docs-image]][docs-link] [![Status][ci-status-image]][ci-status-link] [![Unlicense][unlicense-image]][unlicense-link] [![codecov][codecov-image]][codecov-link]
 
 ## Installation
 
@@ -271,3 +271,5 @@ Unlicense, see the [license](./license) file.
 [ci-status-link]: https://github.com/ifiokjr/edgedb_codegen/actions?query=workflow:ci
 [unlicense-image]: https://img.shields.io/badge/license-Unlicence-blue.svg
 [unlicense-link]: https://opensource.org/license/unlicense
+[codecov-image]: https://codecov.io/github/ifiokjr/edgedb_codegen/graph/badge.svg?token=87K799Q78I
+[codecov-link]: https://codecov.io/github/ifiokjr/edgedb_codegen
