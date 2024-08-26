@@ -41,7 +41,7 @@ use edgedb_tokio::create_client;
 // for the `Input` and `Output`.
 edgedb_query!(
 	simple,
-	"select {hello := \"world\", custom := <str>$custom }"
+	"select { hello := \"world\", custom := <str>$custom }"
 );
 
 #[tokio::main]
@@ -217,6 +217,10 @@ edgedb_query!(
 	select User {**}
 );
 ```
+
+### CLI
+
+Create a `edgedb_codegen_cli` crate which supports generating the typed code into rust files rather than inline queries. This is useful for larger projects to prevent constantly compiling the queries on every change / build.
 
 [crate-image]: https://img.shields.io/crates/v/edgedb_codegen.svg
 [crate-link]: https://crates.io/crates/edgedb_codegen

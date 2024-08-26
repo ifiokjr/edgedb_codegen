@@ -167,6 +167,10 @@ edgedb_query!(
 );
 ```
 
+### CLI
+
+Create a `edgedb_codegen_cli` crate which supports generating the typed code into rust files rather than inline queries. This is useful for larger projects to prevent constantly compiling the queries on every change / build.
+
 ## Contributing
 
 [`devenv`](https://devenv.sh/) is used to provide a reproducible development environment for this project. Follow the [getting started instructions](https://devenv.sh/getting-started/).
