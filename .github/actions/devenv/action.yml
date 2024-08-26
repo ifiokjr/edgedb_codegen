@@ -18,7 +18,7 @@ runs:
         key: ${{ runner.os }}-nix-cache-${{ hashFiles('**/devenv.nix', '**/devenv.yaml', '**/devenv.lock') }}
         restore-keys: ${{ runner.os }}-nix-cache-
     - name: install nix
-      uses: cachix/install-nix-action@v26
+      uses: cachix/install-nix-action@v27
       with:
         github_access_token: ${{ inputs.github-token }}
     - name: import nix store cache
@@ -52,7 +52,7 @@ runs:
       uses: actions/cache@v4
       with:
         path: ./.bin
-        key: ${{ runner.os }}-cargo-bin-${{ hashFiles('rust-toolchain.toml') }}
+        key: ${{ runner.os }}-cargo-bin-${{ hashFiles('rust-toolchain.toml') }}-${{ env.RUSTUP_TOOLCHAIN }}
         restore-keys: |
           ${{ runner.os }}-cargo-bin-
     - name: get pnpm store directory

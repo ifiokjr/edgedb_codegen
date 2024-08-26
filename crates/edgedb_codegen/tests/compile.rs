@@ -20,7 +20,6 @@ pub fn testname() -> String {
 		.to_string()
 }
 
-#[rustversion::attr(not(nightly), ignore = "requires nightly")]
 #[cfg_attr(miri, ignore = "incompatible with miri")]
 #[test]
 fn check_compilation() {

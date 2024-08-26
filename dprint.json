@@ -4,7 +4,7 @@
 	"exec": {
 		"commands": [
 			{
-				"command": "rustfmt --unstable-features --edition 2021",
+				"command": "rustfmt +nightly",
 				"exts": ["rs"]
 			},
 			{
@@ -39,7 +39,7 @@
 		"textWrap": "never"
 	},
 	"includes": [
-		"**/*.{ts,tsx,js,jsx,cjs,mjs,json,jsonc,md,toml,dockerfile,rs,yml,yaml,sh,bash}"
+		"**/*.{json,jsonc,md,toml,rs,yml,yaml,sh,bash}"
 	],
 	"excludes": [
 		"programs/.anchor",

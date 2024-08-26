@@ -70,7 +70,7 @@ pub async fn run_query() -> Result<()> {
 pub async fn run_transaction() -> Result<()> {
 	let client = create_client().await?;
 
-	client
+	let result = client
 		.transaction(|mut tx| {
 			async move {
 				let insert_props = insert_user::Input::builder()
@@ -79,21 +79,24 @@ pub async fn run_transaction() -> Result<()> {
 					.slug("test_transaction")
 					.build();
 				let result = insert_user::transaction(&mut tx, &insert_props).await?;
-				insta::assert_ron_snapshot!(result, {	".id" => "[uuid]"	}, @r###"
-    Output(
-      id: "[uuid]",
-      name: Some("Test Transaction"),
-      bio: Some("another bio of class"),
-      slug: "test_transaction",
-    )
-    "###);
 
 				// cleanup
 				let remove_props = remove_user::Input::builder().id(result.id).build();
-				remove_user::transaction(&mut tx, &remove_props).await
+				remove_user::transaction(&mut tx, &remove_props).await?;
+
+				Ok(result)
 			}
 		})
 		.await?;
+
+	insta::assert_ron_snapshot!(result, {	".id" => "[uuid]"	}, @r###"
+ Output(
+   id: "[uuid]",
+   name: Some("Test Transaction"),
+   bio: Some("another bio of class"),
+   slug: "test_transaction",
+ )
+ "###);
 
 	Ok(())
 }
