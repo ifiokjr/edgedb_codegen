@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.1.1](https://github.com/ifiokjr/edgedb_codegen/compare/edgedb_codegen_macros@0.1.0...edgedb_codegen_macros@0.1.1) - 2024-08-26
+
+### <!-- 7 -->⚙️ Miscellaneous Tasks
+- improve changelog generation
+
 ## [0.1.0](https://github.com/ifiokjr/edgedb_codegen/releases/tag/edgedb_codegen_macros-v0.1.0) - 2024-08-25
 
 ### 🎉 Added

@@ -537,7 +537,7 @@ dependencies = [
 
 [[package]]
 name = "edgedb_codegen"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "assert2",
  "bigdecimal",
@@ -567,7 +567,7 @@ dependencies = [
 
 [[package]]
 name = "edgedb_codegen_core"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "check_keyword",
  "edgedb-errors",
@@ -585,7 +585,7 @@ dependencies = [
 
 [[package]]
 name = "edgedb_codegen_macros"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "edgedb_codegen_core",
  "proc-macro2",

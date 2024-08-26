@@ -3,7 +3,7 @@ members = ["crates/*"]
 resolver = "2"
 
 [workspace.package]
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Ifiok Jr. <ifiokotung@gmail.com>"]
 edition = "2021"
 homepage = "https://edgedb.com"
@@ -42,9 +42,9 @@ typed-builder = "0.20"
 uuid = "1"
 
 # crates
-edgedb_codegen = { path = "./crates/edgedb_codegen", version = "0.1.0" }
-edgedb_codegen_core = { path = "./crates/edgedb_codegen_core", version = "0.1.0" }
-edgedb_codegen_macros = { path = "./crates/edgedb_codegen_macros", version = "0.1.0" }
+edgedb_codegen = { path = "./crates/edgedb_codegen", version = "0.1.1" }
+edgedb_codegen_core = { path = "./crates/edgedb_codegen_core", version = "0.1.1" }
+edgedb_codegen_macros = { path = "./crates/edgedb_codegen_macros", version = "0.1.1" }
 
 [workspace.metadata.bin]
 cargo-insta = { version = "1.39.0" }
