@@ -159,17 +159,16 @@ This crate is still in early development and there are several features that are
 
 Currently the following types are not supported:
 
-- Named Enums - instead all enums are represented as strings.
-- `Range` - The macro will panic if a range is used.
+- `enum` - currently all enums are represented as strings.
 - `MultiRange` - The macro will panic if a multirange is used.
 
-#### Named Enums
+#### `enum`
 
 Currently all enums are represented as strings.
 
-In order to support full enum generation the `edgedb-protocol` crate needs to be updated to use the [binary protocol 2.0](https://docs.edgedb.com/database/reference/protocol/typedesc#enumeration-type-descriptor). In the current 1.0 version the enum descriptors are returned without the name property.
+In order to support full enum generation the `edgedb-protocol` crate needs to be [updated](https://github.com/edgedb/edgedb-rust/issues/336) to use the [binary protocol 2.0](https://docs.edgedb.com/database/reference/protocol/typedesc#enumeration-type-descriptor). In the current 1.0 version the enum descriptors are returned without the name property.
 
-Once this is implemented the macro will be able to generate the correct code.
+Once [this is](https://github.com/edgedb/edgedb-rust/issues/336) implemented the macro will be able to generate the correct code.
 
 However end users probably don't want multiple enums for each generated query module as this would break sharing. To get around this, there should be a macro for generating the shared types used by all other.
 
@@ -180,9 +179,9 @@ use edgedb_codegen::generate_shared_types;
 generate_shared_types!(); // exports the shared types to the `edb` module.
 ```
 
-#### Ranges / MultiRange
+#### `MultiRange`
 
-These are not currently exported by the `edgedb-protocol` so should be added in a PR to the `edgedb-protocol` crate.
+These are not currently exported by the `edgedb-protocol` so should be added in a PR to the `edgedb-protocol` crate, if they are still supported in the new protocol.
 
 ### Configuration
 

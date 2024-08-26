@@ -356,7 +356,24 @@ fn explore_descriptor(
 
 			Ok(result)
 		}
-		Descriptor::Range(_) => todo!("`range` is not public in the `edgedb_protocol` crate"),
+		Descriptor::Range(range) => {
+			let range_descriptor = typedesc.get(range.type_pos).ok();
+			let sub_root_name = format!("{root_name}Range");
+			let props = props
+				.into_props()
+				.descriptor(range_descriptor)
+				.root_name(&sub_root_name)
+				.build();
+			let result = explore_descriptor(props, tokens)?
+				.map(|result| quote!(#EXPORTS_IDENT::edgedb_protocol::model::Range<#result>));
+
+			if is_root {
+				tokens.extend(quote!(pub type #root_ident = #result;));
+				Ok(Some(quote!(#root_ident)))
+			} else {
+				Ok(result)
+			}
+		}
 		Descriptor::MultiRange(_) => todo!("`multirange` not in the `edgedb_protocol` crate"),
 		Descriptor::TypeAnnotation(_) => todo!("type annotations are not supported"),
 	}

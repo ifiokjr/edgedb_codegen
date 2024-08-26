@@ -44,16 +44,15 @@ pub fn testname() -> String {
 	"select { my_string := RelationshipType.Follow, my_number := 42, several_numbers := {1, 2, \
 	 3}, array := [1, 2, 3] };"
 )]
-#[case::input_shape_with_args(r#"select {hello := "world", custom := <str>$custom }"#)]
+#[case::input_shape_with_args(r#"select { hello := "world", custom := <str>$custom }"#)]
 #[case::object_shape("select Team {**}")]
 #[case::object_shape_with_args(
 	"select Team {**} filter .name like <str>$starts_with ++ '%' and .description like '%' ++ \
 	 <str>$ends_with;"
 )]
 #[case::types_query(TYPES_QUERY)]
+#[case::range("select range(0, 10)")]
 // #[case::bytes("select b'bina\\x01ry'")] // TODO: bytes don't implement `DecodeScalar` yet.
-// #[case::range("select range(0, 10)")] // TODO: range doesn't have an export from the protocol
-// yet.
 #[tokio::test]
 async fn codegen_literals(testname: String, #[case] query: &str) -> Result<()> {
 	set_snapshot_suffix!("{}", testname);
