@@ -1,4 +1,5 @@
 #![doc = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/readme.md"))]
+//! ## Features
 #![doc = document_features::document_features!()]
 
 /// Generates a query module from a query string.
