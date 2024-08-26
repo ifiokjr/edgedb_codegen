@@ -125,6 +125,7 @@ Once this is implemented the macro will be able to generate the correct code.
 However end users probably don't want multiple enums for each generated query module as this would break sharing. To get around this, there should be a macro for generating the shared types used by all other.
 
 ```rust,ignore
+// lib.rs
 use edgedb_codegen::generate_shared_types;
 
 generate_shared_types!(); // exports the shared types to the `edb` module.
