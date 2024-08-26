@@ -44,7 +44,6 @@ pub fn resolve_path(path: impl AsRef<Path>, error_span: Span) -> syn::Result<Pat
 pub async fn rustfmt(source: &str) -> std::io::Result<String> {
 	let mut process = Command::new("rustfmt")
 		.args([
-			"+nightly",
 			"--emit",
 			"stdout",
 			"--unstable-features",
