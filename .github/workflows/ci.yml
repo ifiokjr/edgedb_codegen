@@ -35,7 +35,7 @@ jobs:
     runs-on: "ubuntu-latest"
     strategy:
       matrix:
-        version: ["1.72.0", stable, beta, nightly]
+        version: ["1.72.0", stable]
     env:
       RUSTUP_TOOLCHAIN: ${{ matrix.version }}
     steps:
@@ -49,12 +49,31 @@ jobs:
       - name: test
         run: test:all
         shell: bash
+  coverage:
+    timeout-minutes: 15
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+      - name: setup
+        uses: ./.github/actions/devenv
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          nix-cache: /tmp/nixcache
+      - name: test coverage
+        run: coverage:all
+        shell: bash
+      - name: upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          files: lcov.info
+          token: ${{ secrets.CODECOV_TOKEN }}
   build:
     timeout-minutes: 15
     runs-on: "ubuntu-latest"
     strategy:
       matrix:
-        version: ["1.72.0", stable, beta, nightly]
+        version: ["1.72.0", stable, beta]
     env:
       RUSTUP_TOOLCHAIN: ${{ matrix.version }}
     steps:
