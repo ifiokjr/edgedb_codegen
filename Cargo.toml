@@ -9,7 +9,7 @@ edition = "2021"
 homepage = "https://edgedb.com"
 license = "Unlicense"
 repository = "https://github.com/ifiokjr/edgedb_codegen"
-rust-version = "1.71.0"
+rust-version = "1.72.0"
 
 [workspace.dependencies]
 assert2 = "0.3"
