@@ -1,0 +1,34 @@
+[[package]]
+name = "edgedb_codegen"
+changelog_path = "changelog.md"
+
+[[package]]
+name = "edgedb_codegen_macros"
+changelog_path = "crates/edgedb_codegen_macros/changelog.md"
+
+[[package]]
+name = "edgedb_codegen_core"
+changelog_path = "crates/edgedb_codegen_core/changelog.md"
+
+[changelog]
+commit_parsers = [
+	{ message = "^feat", group = "<!-- 0 -->🎉 Added" },
+	{ message = "^changed", group = "📝 Changed" },
+	{ message = "^fix", group = "<!-- 1 -->🐛 Bug Fixes" },
+	{ message = "^deprecated", group = "🗑️ Deprecated" },
+	{ message = "^doc", group = "<!-- 3 -->📚 Documentation" },
+	{ message = "^perf", group = "<!-- 4 -->⚡ Performance" },
+	{ message = "^refactor\\(clippy\\)", skip = true },
+	{ message = "^refactor", group = "<!-- 2 -->🚜 Refactor" },
+	{ message = "^style", group = "<!-- 5 -->🎨 Styling" },
+	{ message = "^test", group = "<!-- 6 -->🧪 Testing" },
+	{ message = "^chore\\(release\\):", skip = true },
+	{ message = "^chore: release", skip = true },
+	{ message = "^chore\\(deps.*\\)", skip = true },
+	{ message = "^chore\\(pr\\)", skip = true },
+	{ message = "^chore\\(pull\\)", skip = true },
+	{ message = "^chore\\(npm\\).*yarn\\.lock", skip = true },
+	{ message = "^chore|^ci", group = "<!-- 7 -->⚙️ Miscellaneous Tasks" },
+	{ body = ".*security", group = "<!-- 8 -->🛡️ Security" },
+	{ message = "^revert", group = "<!-- 9 -->◀️ Revert" },
+]

@@ -51,6 +51,7 @@
 		"**/fixtures",
 		"**/snapshots",
 		"**/target",
+		"**/changelog.md",
 		"docs/book/**",
 		".bin/",
 		".local-cache/",
