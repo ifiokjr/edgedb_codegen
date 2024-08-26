@@ -103,11 +103,9 @@ pub mod simple {
 		pub custom: String,
 	}
 	#[doc = r" The original query string provided to the macro. Can be reused in your codebase."]
-	pub const QUERY: &str = "select {hello := \"world\", custom := <str>$custom }";
+	pub const QUERY: &str = "select { hello := \"world\", custom := <str>$custom }";
 }
 ```
-
-### Query Files (Optional)
 
 ### Query Files
 
