@@ -33,6 +33,11 @@ jobs:
   test:
     timeout-minutes: 15
     runs-on: "ubuntu-latest"
+    strategy:
+      matrix:
+        version: ["1.71.0", stable, beta, nightly]
+    env:
+      RUSTUP_TOOLCHAIN: ${{ matrix.version }}
     steps:
       - name: checkout repository
         uses: actions/checkout@v4
@@ -47,6 +52,11 @@ jobs:
   build:
     timeout-minutes: 15
     runs-on: "ubuntu-latest"
+    strategy:
+      matrix:
+        version: ["1.71.0", stable, beta, nightly]
+    env:
+      RUSTUP_TOOLCHAIN: ${{ matrix.version }}
     steps:
       - name: checkout repository
         uses: actions/checkout@v4

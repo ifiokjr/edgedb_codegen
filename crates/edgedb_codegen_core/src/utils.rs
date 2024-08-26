@@ -43,7 +43,15 @@ pub fn resolve_path(path: impl AsRef<Path>, error_span: Span) -> syn::Result<Pat
 
 pub async fn rustfmt(source: &str) -> std::io::Result<String> {
 	let mut process = Command::new("rustfmt")
-		.arg("--emit=stdout")
+		.args([
+			"+nightly",
+			"--emit",
+			"stdout",
+			"--unstable-features",
+			"--edition",
+			"2021",
+		])
+		.env("RUSTUP_TOOLCHAIN", "nightly")
 		.stdin(std::process::Stdio::piped())
 		.stdout(std::process::Stdio::piped())
 		.spawn()?;
