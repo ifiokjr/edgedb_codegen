@@ -54,6 +54,7 @@ pub fn testname() -> String {
 // #[case::range("select range(0, 10)")] // TODO: `Range` doesn't implement `Queryable` yet.
 // #[case::bytes("select b'bina\\x01ry'")] // TODO: bytes don't implement `DecodeScalar` yet.
 #[tokio::test]
+#[rustversion::attr(not(nightly), ignore = "requires nightly")]
 async fn codegen_literals(testname: String, #[case] query: &str) -> Result<()> {
 	set_snapshot_suffix!("{}", testname);
 
@@ -75,6 +76,7 @@ async fn codegen_literals(testname: String, #[case] query: &str) -> Result<()> {
 #[case("insert_user")]
 #[case("remove_user")]
 #[tokio::test]
+#[rustversion::attr(not(nightly), ignore = "requires nightly")]
 async fn codegen_files(#[case] path: &str) -> Result<()> {
 	set_snapshot_suffix!("{}", path);
 

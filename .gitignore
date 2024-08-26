@@ -45,4 +45,4 @@ node_modules/
 /test-ledger
 
 **/*.pem
-
+lcov.info

@@ -78,6 +78,12 @@
     cargo test_codegen
     cargo test_docs
   '';
+  scripts."coverage:all".exec = ''
+    set -e
+    cargo coverage_codegen
+    cargo coverage_docs
+    cargo coverage_report
+  '';
   scripts."setup:vscode".exec = ''
     set -e
     rm -rf .vscode
