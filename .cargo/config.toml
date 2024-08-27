@@ -1,5 +1,6 @@
 [alias]
 # bins
+deny = ["bin", "cargo-deny"]
 insta = ["bin", "cargo-insta"]
 llvm-cov = ["bin", "cargo-llvm-cov"]
 nextest = ["bin", "cargo-nextest"]
