@@ -19,6 +19,7 @@ edgedb-protocol = { workspace = true, features = ["all-types", "with-serde"] }
 edgedb-tokio = { workspace = true, features = ["unstable", "derive"] }
 heck = { workspace = true }
 log = { workspace = true }
+prettyplease = { workspace = true }
 proc-macro2 = { workspace = true }
 quote = { workspace = true }
 syn = { workspace = true }

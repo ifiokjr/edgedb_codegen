@@ -575,6 +575,7 @@ dependencies = [
  "edgedb-tokio",
  "heck",
  "log",
+ "prettyplease",
  "proc-macro2",
  "quote",
  "syn 2.0.76",

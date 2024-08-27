@@ -41,6 +41,7 @@ pub fn resolve_path(path: impl AsRef<Path>, error_span: Span) -> syn::Result<Pat
 	Ok(base_dir_path.join(path))
 }
 
+/// Will format the given source code using `rustfmt`.
 pub async fn rustfmt(source: &str) -> std::io::Result<String> {
 	let mut process = Command::new("rustfmt")
 		.args(["--emit", "stdout"])
@@ -56,4 +57,9 @@ pub async fn rustfmt(source: &str) -> std::io::Result<String> {
 	String::from_utf8(process.wait_with_output().await?.stdout).map_err(|_| {
 		std::io::Error::new(std::io::ErrorKind::InvalidData, "Rustfmt output not UTF-8")
 	})
+}
+
+/// Will format the given source code using `prettyplease`.
+pub fn prettify(source: &str) -> syn::Result<String> {
+	Ok(prettyplease::unparse(&syn::parse_str(source)?))
 }
