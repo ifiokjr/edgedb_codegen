@@ -2,14 +2,14 @@
 name = "edgedb_codegen_macros"
 version = { workspace = true }
 authors = { workspace = true }
+categories = ["database"]
 edition = { workspace = true }
 homepage = { workspace = true }
+keywords = ["edgedb", "database", "typesafe", "checked", "macros"]
 license = { workspace = true }
+readme = "readme.md"
 repository = { workspace = true }
 rust-version = { workspace = true }
-readme = "readme.md"
-categories = ["database"]
-keywords = ["edgedb", "database", "typesafe", "checked", "macros"]
 description = "The proc-macro crate for the `edgedb_codegen` crate."
 
 [lib]
