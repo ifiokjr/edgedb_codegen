@@ -4,9 +4,11 @@ inputs:
   github-token:
     description: Provide a github token
     required: true
+
   nix-cache:
     description: The location of the nix cache
     required: true
+
 runs:
   using: composite
   steps:
@@ -17,37 +19,46 @@ runs:
         path: ${{ inputs.nix-cache }}
         key: ${{ runner.os }}-nix-cache-${{ hashFiles('**/devenv.nix', '**/devenv.yaml', '**/devenv.lock') }}
         restore-keys: ${{ runner.os }}-nix-cache-
+
     - name: install nix
       uses: cachix/install-nix-action@v27
       with:
         github_access_token: ${{ inputs.github-token }}
+
     - name: import nix store cache
       if: steps.nix-cache.outputs.cache-hit == 'true'
       run: nix-store --import < ${{ inputs.nix-cache }}
       shell: bash
+
     - name: enable cachix
       uses: cachix/cachix-action@v15
       with:
         name: devenv
+
     - name: install devenv.sh
       run: |
         cachix use devenv
         nix profile install --accept-flake-config github:cachix/devenv/v1.0.8
       shell: bash
+
     - name: build developer environment
       run: devenv test
       shell: bash
+
     - name: update path with devenv
       run: devenv shell setup:ci
       shell: bash
+
     - name: export nix store cache
       if: steps.nix-cache.outputs.cache-hit != 'true'
       run: nix-store --export $(find /nix/store -maxdepth 1 -name '*-*')> ${{ inputs.nix-cache }}
       shell: bash
+
     - name: cache rust dependencies
       uses: Swatinem/rust-cache@v2
       with:
         key: ${{ runner.os }}
+
     - name: cache cargo binaries
       uses: actions/cache@v4
       with:
@@ -55,13 +66,16 @@ runs:
         key: ${{ runner.os }}-cargo-bin-${{ hashFiles('rust-toolchain.toml') }}-${{ env.RUSTUP_TOOLCHAIN }}
         restore-keys: |
           ${{ runner.os }}-cargo-bin-
+
     - name: get pnpm store directory
       id: pnpm-cache
       run: echo "store=$(pnpm store path)" >> $GITHUB_OUTPUT
       shell: bash
+
     - name: install dependencies
       run: install:all
       shell: bash
+
     - name: setup database
       run: db:setup
       shell: bash

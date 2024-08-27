@@ -15,7 +15,6 @@ dir = "target/nextest"
 # This section defines the default nextest profile. Custom profiles are layered
 # on top of the default profile.
 [profile.default]
-
 # "retries" defines the number of times a test should be retried. If set to a
 # non-zero value, tests that succeed on a subsequent attempt will be marked as
 # flaky. Can be overridden through the `--retries` option.
@@ -95,16 +94,7 @@ leak-timeout = "100ms"
 # `nextest archive` automatically includes any build output required by a standard build.
 # However sometimes extra non-standard files are required.
 # To address this, "archive.include" specifies additional paths that will be included in the archive.
-archive.include = [
-	# Examples:
-	#
-	# { path = "application-data", relative-to = "target" },
-	# { path = "data-from-some-dependency/file.txt", relative-to = "target" },
-	#
-	# In the above example:
-	# * the directory and its contents at "target/application-data" will be included recursively in the archive.
-	# * the file "target/data-from-some-dependency/file.txt" will be included in the archive.
-]
+archive.include = []
 
 [profile.default.junit]
 # Output a JUnit report into the given file inside 'store.dir/<profile-name>'.
