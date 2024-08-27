@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.1.2](https://github.com/ifiokjr/edgedb_codegen/compare/v0.1.1...v0.1.2) - 2024-08-27
+
+### <!-- 3 -->📚 Documentation
+- add coverage badge
+
+### <!-- 6 -->🧪 Testing
+- update to use `prettyplease` in snapshots
+- add coverage support
+
+### <!-- 7 -->⚙️ Miscellaneous Tasks
+- support testing multiple rust versions
+
 ## [0.1.1](https://github.com/ifiokjr/edgedb_codegen/compare/v0.1.0...v0.1.1) - 2024-08-26
 
 ### <!-- 0 -->🎉 Added
