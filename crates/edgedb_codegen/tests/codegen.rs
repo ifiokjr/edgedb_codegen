@@ -61,7 +61,7 @@ async fn codegen_literals(testname: String, #[case] query: &str) -> Result<()> {
 	let relative_path = format!("tests/compile/codegen/{testname}.rs");
 	let descriptor = get_descriptor(query).await?;
 	let code = generate_rust_from_query(&descriptor, "example", query)?;
-	let content = rustfmt(&code.to_string()).await?;
+	let content = prettify(&code.to_string())?;
 
 	// Check that the snapshot hasn't changed.
 	insta::assert_snapshot!(&content);
@@ -76,7 +76,6 @@ async fn codegen_literals(testname: String, #[case] query: &str) -> Result<()> {
 #[case("insert_user")]
 #[case("remove_user")]
 #[tokio::test]
-#[rustversion::attr(not(nightly), ignore = "requires nightly")]
 async fn codegen_files(#[case] path: &str) -> Result<()> {
 	set_snapshot_suffix!("{}", path);
 
@@ -85,7 +84,7 @@ async fn codegen_files(#[case] path: &str) -> Result<()> {
 	let query = tokio::fs::read_to_string(&query_path).await?;
 	let descriptor = get_descriptor(&query).await?;
 	let code = generate_rust_from_query(&descriptor, "example", &query)?;
-	let content = rustfmt(&code.to_string()).await?;
+	let content = prettify(&code.to_string())?;
 
 	// Check that the snapshot hasn't changed.
 	insta::assert_snapshot!(&content);
@@ -104,7 +103,7 @@ async fn prepare_compile_test(content: &str, relative_path: &str) -> Result<()> 
 		.is_some_and(|v| ["1", "true"].contains(&v.as_str()));
 
 	let path = PathBuf::from(CRATE_DIR).join(relative_path);
-	let generated = generate_contents(content).await?;
+	let generated = generate_contents(content)?;
 
 	let should_update = match tokio::fs::read_to_string(&path).await {
 		Ok(current) => current != generated,
@@ -119,7 +118,7 @@ async fn prepare_compile_test(content: &str, relative_path: &str) -> Result<()> 
 	Ok(())
 }
 
-async fn generate_contents(content: &str) -> Result<String> {
+fn generate_contents(content: &str) -> Result<String> {
 	let updated = format!("fn main() {{\n{content}\n}}");
-	Ok(rustfmt(&updated).await?)
+	Ok(prettify(&updated)?)
 }
