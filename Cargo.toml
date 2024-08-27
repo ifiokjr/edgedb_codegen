@@ -48,6 +48,7 @@ edgedb_codegen_core = { path = "./crates/edgedb_codegen_core", version = "0.1.2"
 edgedb_codegen_macros = { path = "./crates/edgedb_codegen_macros", version = "0.1.2" }
 
 [workspace.metadata.bin]
+cargo-deny = { version = "0.16.1" }
 cargo-insta = { version = "1.39.0" }
 cargo-llvm-cov = { version = "0.6.10" }
 cargo-nextest = { version = "0.9.72" }
