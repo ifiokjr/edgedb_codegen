@@ -7,6 +7,8 @@ git_tag_name = "v{{ version }}"
 [[package]]
 name = "edgedb_codegen_macros"
 changelog_path = "crates/edgedb_codegen_macros/changelog.md"
+git_release_enable = false
+git_release_name = "{{ package }}@v{{ version }}"
 git_tag_enable = true
 git_tag_name = "{{ package }}@v{{ version }}"
 
@@ -14,6 +16,7 @@ git_tag_name = "{{ package }}@v{{ version }}"
 name = "edgedb_codegen_core"
 changelog_path = "crates/edgedb_codegen_core/changelog.md"
 git_release_enable = false
+git_release_name = "{{ package }}@v{{ version }}"
 git_tag_enable = true
 git_tag_name = "{{ package }}@v{{ version }}"
 
