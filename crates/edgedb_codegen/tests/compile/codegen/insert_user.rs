@@ -17,18 +17,19 @@ fn main() {
         ) -> core::result::Result<Output, e::edgedb_errors::Error> {
             conn.query_required_single(QUERY, props).await
         }
-        #[derive(Clone, Debug, e::typed_builder::TypedBuilder)]
+        #[derive(Clone, Debug)]
+        #[cfg_attr(feature = "builder", derive(e::typed_builder::TypedBuilder))]
+        #[cfg_attr(feature = "query", derive(e::edgedb_derive::Queryable))]
         #[cfg_attr(
             feature = "serde",
             derive(e::serde::Serialize, e::serde::Deserialize)
         )]
-        #[cfg_attr(feature = "query", derive(e::edgedb_derive::Queryable))]
         pub struct Input {
-            #[builder(setter(into))]
+            #[cfg_attr(feature = "builder", builder(setter(into)))]
             pub name: String,
-            #[builder(setter(into))]
+            #[cfg_attr(feature = "builder", builder(setter(into)))]
             pub bio: String,
-            #[builder(setter(into))]
+            #[cfg_attr(feature = "builder", builder(setter(into)))]
             pub slug: String,
         }
         impl e::edgedb_protocol::query_arg::QueryArgs for Input {
@@ -43,20 +44,16 @@ fn main() {
                 map.encode(encoder)
             }
         }
-        #[derive(Clone, Debug, e::typed_builder::TypedBuilder)]
+        #[derive(Clone, Debug)]
+        #[cfg_attr(feature = "query", derive(e::edgedb_derive::Queryable))]
         #[cfg_attr(
             feature = "serde",
             derive(e::serde::Serialize, e::serde::Deserialize)
         )]
-        #[cfg_attr(feature = "query", derive(e::edgedb_derive::Queryable))]
         pub struct Output {
-            #[builder(setter(into))]
             pub id: e::uuid::Uuid,
-            #[builder(default, setter(into, strip_option(fallback = name_opt)))]
             pub name: Option<String>,
-            #[builder(default, setter(into, strip_option(fallback = bio_opt)))]
             pub bio: Option<String>,
-            #[builder(setter(into))]
             pub slug: String,
         }
         /// The original query string provided to the macro. Can be reused in your codebase.

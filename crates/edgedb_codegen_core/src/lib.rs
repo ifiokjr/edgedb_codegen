@@ -419,8 +419,8 @@ pub fn explore_object_shape_descriptor(
 				Cardinality::NoResult | Cardinality::AtLeastOne => None,
 			}
 		};
-		let builder_annotation = builder_fields.is_some().then_some(quote!(
-			#[builder(#builder_fields)]
+		let builder_annotation = (is_input && builder_fields.is_some()).then_some(quote!(
+			#[cfg_attr(feature = "builder", builder(#builder_fields))]
 		));
 
 		struct_fields.push(quote! {
@@ -445,10 +445,14 @@ pub fn explore_object_shape_descriptor(
 			}
 		}
 	});
+	let typed_builder_tokens = is_input.then_some(
+		quote!(#[cfg_attr(feature = "builder", derive(#EXPORTS_IDENT::typed_builder::TypedBuilder))]),
+	);
 	let struct_tokens = quote! {
-		#[derive(Clone, Debug, #EXPORTS_IDENT::typed_builder::TypedBuilder)]
-		#[cfg_attr(feature = "serde", derive(#EXPORTS_IDENT::serde::Serialize, #EXPORTS_IDENT::serde::Deserialize))]
+		#[derive(Clone, Debug)]
+		#typed_builder_tokens
 		#[cfg_attr(feature = "query", derive(#EXPORTS_IDENT::edgedb_derive::Queryable))]
+		#[cfg_attr(feature = "serde", derive(#EXPORTS_IDENT::serde::Serialize, #EXPORTS_IDENT::serde::Deserialize))]
 		pub struct #root_ident {
 			#(#struct_fields)*
 		}
