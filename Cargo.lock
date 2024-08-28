@@ -569,6 +569,7 @@ dependencies = [
 name = "edgedb_codegen_core"
 version = "0.1.2"
 dependencies = [
+ "assert2",
  "check_keyword",
  "edgedb-errors",
  "edgedb-protocol",

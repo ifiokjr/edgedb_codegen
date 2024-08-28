@@ -69,3 +69,30 @@ pub async fn rustfmt(source: &str) -> Result<String> {
 pub fn prettify(source: &str) -> syn::Result<String> {
 	Ok(prettyplease::unparse(&syn::parse_str(source)?))
 }
+
+#[cfg(test)]
+mod tests {
+	use assert2::check;
+
+	use super::*;
+
+	#[tokio::test]
+	async fn can_format_file() -> Result<()> {
+		let content = "struct Foo { content: String, allowed: bool, times: u64 }";
+		let formatted = rustfmt(content).await?;
+
+		// formatting changes based on the version of rust used, so can't check for
+		// exact output
+		check!(formatted != content);
+
+		Ok(())
+	}
+
+	#[tokio::test]
+	async fn error_when_formatting_invalid_rust() {
+		let content = "struct Foo { content: String, allowed: bool, times: u64,,,,, INVALID}";
+		let result = rustfmt(content).await;
+
+		check!(result.is_err(), "result should be an error");
+	}
+}
