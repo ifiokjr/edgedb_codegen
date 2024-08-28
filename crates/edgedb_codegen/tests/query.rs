@@ -15,9 +15,9 @@ edgedb_query!(
 #[tokio::test]
 pub async fn simple_query_with_input() -> Result<()> {
 	let client = create_client().await?;
-	let input = simple::Input::builder()
-		.custom("This is a custom field")
-		.build();
+	let input = simple::Input {
+		custom: String::from("This is a custom field"),
+	};
 	let output = simple::query(&client, &input).await?;
 
 	insta::assert_ron_snapshot!(output, @r###"
