@@ -48,6 +48,7 @@
     set -e
     fix:clippy
     fix:format
+    cargo deny check
   '';
   scripts."fix:format".exec = ''
     set -e
@@ -61,6 +62,7 @@
     set -e
     lint:clippy
     lint:format
+    cargo deny check
   '';
   scripts."lint:format".exec = ''
     set -e
