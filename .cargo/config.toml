@@ -6,8 +6,8 @@ llvm-cov = ["bin", "cargo-llvm-cov"]
 nextest = ["bin", "cargo-nextest"]
 
 # testing
-test_codegen = ["nextest", "run", "--features", "serde,query"]
-test_docs = ["test", "--doc", "--features", "serde,query"]
-coverage_codegen = ["llvm-cov", "--no-report", "--features", "serde,query"]
-coverage_docs = ["llvm-cov", "--no-report", "--doc", "--features", "serde,query"]
+test_codegen = ["nextest", "run", "--features", "builder,query,serde"]
+test_docs = ["test", "--doc", "--features", "builder,query,serde"]
+coverage_codegen = ["llvm-cov", "--no-report", "--features", "builder,query,serde"]
+coverage_docs = ["llvm-cov", "--no-report", "--doc", "--features", "builder,query,serde"]
 coverage_report = ["llvm-cov", "report", "--doctests", "--codecov", "--output-path", "codecov.json"]

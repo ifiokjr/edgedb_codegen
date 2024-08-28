@@ -1,4 +1,4 @@
-#![doc = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/readme.md"))]
+#![doc = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/cargo.md"))]
 //! ## Features
 #![doc = document_features::document_features!()]
 
@@ -70,6 +70,7 @@ pub mod exports {
 	pub use num_traits;
 	#[cfg(feature = "serde")]
 	pub use serde;
+	#[cfg(feature = "builder")]
 	pub use typed_builder;
 	pub use uuid;
 }

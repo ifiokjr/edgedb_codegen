@@ -6,6 +6,8 @@ use proc_macro2::Span;
 use tokio::io::AsyncWriteExt;
 use tokio::process::Command;
 
+use crate::Result;
+
 /// Taken from <https://github.com/launchbadge/sqlx/blob/f69f370f25f099fd5732a5383ceffc76f724c482/sqlx-macros-core/src/common.rs#L1C1-L37C2>
 pub fn resolve_path(path: impl AsRef<Path>, error_span: Span) -> syn::Result<PathBuf> {
 	let path = path.as_ref();
@@ -42,7 +44,9 @@ pub fn resolve_path(path: impl AsRef<Path>, error_span: Span) -> syn::Result<Pat
 }
 
 /// Will format the given source code using `rustfmt`.
-pub async fn rustfmt(source: &str) -> std::io::Result<String> {
+pub async fn rustfmt(source: &str) -> Result<String> {
+	let source = prettify(source)?;
+
 	let mut process = Command::new("rustfmt")
 		.args(["--emit", "stdout"])
 		.stdin(std::process::Stdio::piped())
@@ -54,9 +58,11 @@ pub async fn rustfmt(source: &str) -> std::io::Result<String> {
 	stdin.flush().await?;
 	drop(stdin);
 
-	String::from_utf8(process.wait_with_output().await?.stdout).map_err(|_| {
+	let result = String::from_utf8(process.wait_with_output().await?.stdout).map_err(|_| {
 		std::io::Error::new(std::io::ErrorKind::InvalidData, "Rustfmt output not UTF-8")
-	})
+	})?;
+
+	Ok(result)
 }
 
 /// Will format the given source code using `prettyplease`.

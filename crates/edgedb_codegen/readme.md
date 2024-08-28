@@ -47,7 +47,9 @@ edgedb_query!(
 #[tokio::main]
 async fn main() -> Result<(), Error> {
 	let client = create_client().await?;
-	let input = simple::Input::builder().custom("custom").build();
+	let input = simple::Input {
+		custom: String::from("custom"),
+	};
 
 	// For queries the following code can be used.
 	let output = simple::query(&client, &input).await?;
@@ -61,7 +63,7 @@ The macro above generates the following code:
 ```rust
 pub mod simple {
 	use ::edgedb_codegen::exports as e;
-	#[doc = r" Execute the desired query."]
+	/// Execute the desired query.
 	#[cfg(feature = "query")]
 	pub async fn query(
 		client: &e::edgedb_tokio::Client,
@@ -69,7 +71,7 @@ pub mod simple {
 	) -> core::result::Result<Output, e::edgedb_errors::Error> {
 		client.query_required_single(QUERY, props).await
 	}
-	#[doc = r" Compose the query as part of a larger transaction."]
+	/// Compose the query as part of a larger transaction.
 	#[cfg(feature = "query")]
 	pub async fn transaction(
 		conn: &mut e::edgedb_tokio::Transaction,
@@ -77,11 +79,12 @@ pub mod simple {
 	) -> core::result::Result<Output, e::edgedb_errors::Error> {
 		conn.query_required_single(QUERY, props).await
 	}
-	#[derive(Clone, Debug, e :: typed_builder :: TypedBuilder)]
-	#[cfg_attr(feature = "serde", derive(e::serde::Serialize, e::serde::Deserialize))]
+	#[derive(Clone, Debug)]
+	#[cfg_attr(feature = "builder", derive(e::typed_builder::TypedBuilder))]
 	#[cfg_attr(feature = "query", derive(e::edgedb_derive::Queryable))]
+	#[cfg_attr(feature = "serde", derive(e::serde::Serialize, e::serde::Deserialize))]
 	pub struct Input {
-		#[builder(setter(into))]
+		#[cfg_attr(feature = "builder", builder(setter(into)))]
 		pub custom: String,
 	}
 	impl e::edgedb_protocol::query_arg::QueryArgs for Input {
@@ -89,20 +92,21 @@ pub mod simple {
 			&self,
 			encoder: &mut e::edgedb_protocol::query_arg::Encoder,
 		) -> core::result::Result<(), e::edgedb_errors::Error> {
-			let map = e::edgedb_protocol::named_args! { "custom" => self . custom . clone () , };
+			let map = e::edgedb_protocol::named_args! {
+				"custom" => self.custom.clone(),
+			};
 			map.encode(encoder)
 		}
 	}
-	#[derive(Clone, Debug, e :: typed_builder :: TypedBuilder)]
-	#[cfg_attr(feature = "serde", derive(e::serde::Serialize, e::serde::Deserialize))]
+	#[derive(Clone, Debug)]
 	#[cfg_attr(feature = "query", derive(e::edgedb_derive::Queryable))]
+	#[cfg_attr(feature = "serde", derive(e::serde::Serialize, e::serde::Deserialize))]
 	pub struct Output {
-		#[builder(setter(into))]
 		pub hello: String,
-		#[builder(setter(into))]
 		pub custom: String,
 	}
-	#[doc = r" The original query string provided to the macro. Can be reused in your codebase."]
+	/// The original query string provided to the macro. Can be reused in your
+	/// codebase.
 	pub const QUERY: &str = "select { hello := \"world\", custom := <str>$custom }";
 }
 ```
@@ -140,7 +144,9 @@ async fn main() -> Result<(), Error> {
 	let result = client
 		.transaction(|mut txn| {
 			async move {
-				let input = select_user::Input::builder().slug("test").build();
+				let input = select_user::Input {
+					slug: String::from("test"),
+				};
 				let output = select_user::transaction(&mut txn, &input).await?;
 				Ok(output)
 			}
@@ -229,3 +235,14 @@ Create a `edgedb_codegen_cli` crate which supports generating the typed code int
 [unlicense-link]: https://opensource.org/license/unlicense
 [codecov-image]: https://codecov.io/github/ifiokjr/edgedb_codegen/graph/badge.svg?token=87K799Q78I
 [codecov-link]: https://codecov.io/github/ifiokjr/edgedb_codegen
+
+## Features
+
+- **`default`** — The default feature is `with_all`.
+- **`with_bigint`** — Include the `num-bigint` dependency.
+- **`with_bigdecimal`** — Use the `bigdecimal` crate.
+- **`with_chrono`** — Use the `chrono` crate for all dates.
+- **`with_all`** _(enabled by default)_ — Include all additional types. This is included by default. Use `default-features = false` to disable.
+- **`builder`** — Use the `typed-builder` crate to generate the builders for the generated `Input` structs.
+- **`query`** — Turn on the `query` and `transaction` methods and anything that relies on `edgedb-tokio`. The reason to separate this feature is to enable usage of this macro in browser environments where `edgedb-tokio` is not feasible.
+- **`serde`** — Enable serde for the generated code.

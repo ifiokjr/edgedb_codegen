@@ -16,12 +16,12 @@ fn main() {
             conn.query_required_single(QUERY, &()).await
         }
         pub type Input = ();
-        #[derive(Clone, Debug, e::typed_builder::TypedBuilder)]
+        #[derive(Clone, Debug)]
+        #[cfg_attr(feature = "query", derive(e::edgedb_derive::Queryable))]
         #[cfg_attr(
             feature = "serde",
             derive(e::serde::Serialize, e::serde::Deserialize)
         )]
-        #[cfg_attr(feature = "query", derive(e::edgedb_derive::Queryable))]
         pub struct Output {
             pub fruit: String,
             pub quantity: f64,

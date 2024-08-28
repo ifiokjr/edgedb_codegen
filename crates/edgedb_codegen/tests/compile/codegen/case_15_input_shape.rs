@@ -16,19 +16,16 @@ fn main() {
             conn.query_required_single(QUERY, &()).await
         }
         pub type Input = ();
-        #[derive(Clone, Debug, e::typed_builder::TypedBuilder)]
+        #[derive(Clone, Debug)]
+        #[cfg_attr(feature = "query", derive(e::edgedb_derive::Queryable))]
         #[cfg_attr(
             feature = "serde",
             derive(e::serde::Serialize, e::serde::Deserialize)
         )]
-        #[cfg_attr(feature = "query", derive(e::edgedb_derive::Queryable))]
         pub struct Output {
-            #[builder(setter(into))]
             pub my_string: String,
-            #[builder(setter(into))]
             pub my_number: i64,
             pub several_numbers: Vec<i64>,
-            #[builder(setter(into))]
             pub array: Vec<i64>,
         }
         /// The original query string provided to the macro. Can be reused in your codebase.

@@ -26,8 +26,8 @@ with_bigint = ["edgedb_codegen_core/with_bigint"]
 with_bigdecimal = ["edgedb_codegen_core/with_bigdecimal"]
 with_chrono = ["edgedb_codegen_core/with_chrono"]
 with_all = ["edgedb_codegen_core/with_all"]
-serde = []
 query = []
+serde = []
 
 [lints]
 workspace = true
