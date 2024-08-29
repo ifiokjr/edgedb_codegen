@@ -19,7 +19,7 @@ cargo add edgedb_codegen
 Or directly add the following to your `Cargo.toml` file.
 
 ```toml
-edgedb_codegen = "0.1.0" # replace with the latest version
+edgedb_codegen = "0.2"
 ```
 
 Follow the [Quickstart Guide](https://docs.edgedb.com/get-started/quickstart) to make sure your edgedb instance is running. The macro relies on the running `edgedb` instance to parse the output of the provided query string.
@@ -269,14 +269,48 @@ install:all
 
 This installs all the cargo binaries locally so you don't need to worry about polluting your global namespace.
 
+At this point you must setup the edgedb instance.
+
+```bash
+db:setup # setup the edgedb instance
+```
+
+Now you can make your changes and run tests.
+
+```bash
+test:all
+```
+
+### Available Commands
+
+- `build:all`: Build all crates with all features activated.
+- `build:docs`: Build documentation site.
+- `coverage:all`: Test all files and generate a coverage report for upload to codecov.
+- `db:destroy`: Destroy the local database.
+- `db:setup`: Setup the local database.
+- `db:up`: Watch changes to the local database.
+- `fix:all`: Fix all fixable lint issues.
+- `fix:clippy`: Fix fixable lint issues raised by rust clippy.
+- `fix:format`: Fix formatting for entire project.
+- `install:all`: Install all dependencies.
+- `install:cargo:bin`: Install cargo binaries locally.
+- `lint:all`: Lint all project files.
+- `lint:clippy`: Check rust clippy lints.
+- `lint:format`: Check all formatting is correct.
+- `setup:ci`: Setup the github ci environment.
+- `setup:helix`: Setup the helix editor for development.
+- `setup:vscode`: Setup the vscode editor for development.
+- `test:all`: Test all project files.
+- `update:deps`: Update dependencies.
+
 ### Upgrading `devenv`
 
 If you have an outdated version of `devenv` you can update it by running the following commands. If you have an easier way, please create a PR and I'll update these docs.
 
 ```bash
-nix profile list # find the index of the nxi package
+nix profile list # find the index of the devenv package
 nix profile remove <index>
-nix profile install --accept-flake-config github:cachix/devenv/<version>
+nix profile install ---accept-flake-config nixpkgs#devenv
 ```
 
 ### Editor Setup
@@ -284,7 +318,11 @@ nix profile install --accept-flake-config github:cachix/devenv/<version>
 To setup recommended configuration for your favorite editor run the following commands.
 
 ```bash
-setup:vscode # Setup vscode
+setup:vscode # Setup vscode with recommended configuration
+```
+
+```bash
+setup:helix # Setup helix with recommended configuration
 ```
 
 ## License

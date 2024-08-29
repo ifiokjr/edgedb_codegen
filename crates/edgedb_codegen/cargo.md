@@ -19,7 +19,7 @@ cargo add edgedb_codegen
 Or directly add the following to your `Cargo.toml` file.
 
 ```toml
-edgedb_codegen = "0.1.0" # replace with the latest version
+edgedb_codegen = "0.2"
 ```
 
 Follow the [Quickstart Guide](https://docs.edgedb.com/get-started/quickstart) to make sure your edgedb instance is running. The macro relies on the running `edgedb` instance to parse the output of the provided query string.
