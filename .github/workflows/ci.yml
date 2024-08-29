@@ -36,6 +36,23 @@ jobs:
         run: lint:all
         shell: bash
 
+  docs:
+    timeout-minutes: 15
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+
+      - name: setup
+        uses: ./.github/actions/devenv
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          nix-cache: /tmp/nixcache
+
+      - name: build docs
+        run: build:docs
+        shell: bash
+
   test:
     timeout-minutes: 15
     runs-on: "ubuntu-latest"
