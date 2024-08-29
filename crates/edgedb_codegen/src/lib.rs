@@ -1,6 +1,7 @@
 #![doc = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/cargo.md"))]
 //! ## Features
 #![doc = document_features::document_features!()]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 /// Generates a query module from a query string.
 ///
@@ -53,24 +54,38 @@ macro_rules! edgedb_query_file {
 
 pub mod exports {
 	#[cfg(feature = "with_bigdecimal")]
+	#[cfg_attr(docsrs, doc(cfg(feature = "with_bigdecimal")))]
 	pub use bigdecimal;
 	pub use bytes;
 	#[cfg(feature = "with_chrono")]
+	#[cfg_attr(docsrs, doc(cfg(feature = "with_chrono")))]
 	pub use chrono;
 	pub use edgedb_codegen_macros;
 	#[cfg(feature = "query")]
+	#[cfg_attr(docsrs, doc(cfg(feature = "query")))]
 	pub use edgedb_derive;
 	pub use edgedb_errors;
 	pub use edgedb_protocol;
 	#[cfg(feature = "query")]
+	#[cfg_attr(docsrs, doc(cfg(feature = "query")))]
 	pub use edgedb_tokio;
 	#[cfg(any(feature = "with_bigdecimal", feature = "with_bigint"))]
+	#[cfg_attr(
+		docsrs,
+		doc(cfg(any(feature = "with_bigdecimal", feature = "with_bigint")))
+	)]
 	pub use num_bigint;
 	#[cfg(any(feature = "with_bigdecimal", feature = "with_bigint"))]
+	#[cfg_attr(
+		docsrs,
+		doc(cfg(any(feature = "with_bigdecimal", feature = "with_bigint")))
+	)]
 	pub use num_traits;
 	#[cfg(feature = "serde")]
+	#[cfg_attr(docsrs, doc(cfg(feature = "serde")))]
 	pub use serde;
 	#[cfg(feature = "builder")]
+	#[cfg_attr(docsrs, doc(cfg(feature = "builder")))]
 	pub use typed_builder;
 	pub use uuid;
 }

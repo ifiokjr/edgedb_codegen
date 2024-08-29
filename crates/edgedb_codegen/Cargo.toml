@@ -12,6 +12,10 @@ repository = { workspace = true }
 rust-version = { workspace = true }
 description = "Generate fully typed rust code from your EdgeDB schema and inline queries."
 
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
 [dependencies]
 bigdecimal = { workspace = true, optional = true }
 bytes = { workspace = true }
