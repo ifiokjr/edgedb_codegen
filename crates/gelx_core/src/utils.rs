@@ -50,12 +50,12 @@ pub(crate) fn maybe_uuid_to_token_name(uuid: &Uuid, exports_ident: &Ident) -> Op
 		STD_INT64 => Some(quote!(i64)),
 		STD_FLOAT32 => Some(quote!(f32)),
 		STD_FLOAT64 => Some(quote!(f64)),
-		STD_DECIMAL => Some(quote!(#exports_ident::DecimalAlias)),
+		STD_DECIMAL => Some(quote!(#exports_ident::BigDecimal)),
 		STD_BOOL => Some(quote!(bool)),
-		STD_DATETIME | STD_PG_TIMESTAMPTZ => Some(quote!(#exports_ident::DateTimeAlias)),
-		CAL_LOCAL_DATETIME | STD_PG_TIMESTAMP => Some(quote!(#exports_ident::LocalDatetimeAlias)),
-		CAL_LOCAL_DATE | STD_PG_DATE => Some(quote!(#exports_ident::LocalDateAlias)),
-		CAL_LOCAL_TIME => Some(quote!(#exports_ident::LocalTimeAlias)),
+		STD_DATETIME | STD_PG_TIMESTAMPTZ => Some(quote!(#exports_ident::DateTime)),
+		CAL_LOCAL_DATETIME | STD_PG_TIMESTAMP => Some(quote!(#exports_ident::NaiveDateTime)),
+		CAL_LOCAL_DATE | STD_PG_DATE => Some(quote!(#exports_ident::NaiveDate)),
+		CAL_LOCAL_TIME => Some(quote!(#exports_ident::NaiveTime)),
 		STD_DURATION => Some(quote!(#exports_ident::gel_protocol::model::Duration)),
 		CAL_RELATIVE_DURATION => {
 			Some(quote!(#exports_ident::gel_protocol::model::RelativeDuration))
@@ -185,15 +185,15 @@ mod tests {
 	#[case::std_int64(STD_INT64, "i64")]
 	#[case::std_float32(STD_FLOAT32, "f32")]
 	#[case::std_float64(STD_FLOAT64, "f64")]
-	#[case::std_decimal(STD_DECIMAL, "exports::DecimalAlias")]
+	#[case::std_decimal(STD_DECIMAL, "exports::BigDecimal")]
 	#[case::std_bool(STD_BOOL, "bool")]
-	#[case::std_datetime(STD_DATETIME, "exports::DateTimeAlias")]
-	#[case::std_pg_timestamptz(STD_PG_TIMESTAMPTZ, "exports::DateTimeAlias")]
-	#[case::cal_local_datetime(CAL_LOCAL_DATETIME, "exports::LocalDatetimeAlias")]
-	#[case::std_pg_timestamp(STD_PG_TIMESTAMP, "exports::LocalDatetimeAlias")]
-	#[case::cal_local_date(CAL_LOCAL_DATE, "exports::LocalDateAlias")]
-	#[case::std_pg_date(STD_PG_DATE, "exports::LocalDateAlias")]
-	#[case::cal_local_time(CAL_LOCAL_TIME, "exports::LocalTimeAlias")]
+	#[case::std_datetime(STD_DATETIME, "exports::DateTime")]
+	#[case::std_pg_timestamptz(STD_PG_TIMESTAMPTZ, "exports::DateTime")]
+	#[case::cal_local_datetime(CAL_LOCAL_DATETIME, "exports::NaiveDateTime")]
+	#[case::std_pg_timestamp(STD_PG_TIMESTAMP, "exports::NaiveDateTime")]
+	#[case::cal_local_date(CAL_LOCAL_DATE, "exports::NaiveDate")]
+	#[case::std_pg_date(STD_PG_DATE, "exports::NaiveDate")]
+	#[case::cal_local_time(CAL_LOCAL_TIME, "exports::NaiveTime")]
 	#[case::std_duration(STD_DURATION, "exports::gel_protocol::model::Duration")]
 	#[case::cal_relative_duration(
 		CAL_RELATIVE_DURATION,

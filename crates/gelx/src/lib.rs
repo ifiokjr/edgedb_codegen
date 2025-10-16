@@ -131,9 +131,9 @@ pub mod exports {
 		if #[cfg(feature = "with_bigdecimal")] {
 			#[cfg_attr(docsrs, doc(cfg(feature = "with_bigdecimal")))]
 			pub use bigdecimal;
-			pub type DecimalAlias = bigdecimal::BigDecimal;
+			pub type BigDecimal = bigdecimal::BigDecimal;
 		} else {
-			pub type DecimalAlias = gel_protocol::model::Decimal;
+ 			pub type BigDecimal = gel_protocol::model::Decimal;
 		}
 	}
 
@@ -141,15 +141,15 @@ pub mod exports {
 		if #[cfg(feature = "with_chrono")] {
 			#[cfg_attr(docsrs, doc(cfg(feature = "with_chrono")))]
 			pub use chrono;
-			pub type DateTimeAlias = chrono::DateTime<chrono::Utc>;
-			pub type LocalDatetimeAlias = chrono::NaiveDateTime;
-			pub type LocalDateAlias = chrono::NaiveDate;
-			pub type LocalTimeAlias = chrono::NaiveTime;
+			pub type DateTime = chrono::DateTime<chrono::Utc>;
+			pub type NaiveDateTime = chrono::NaiveDateTime;
+			pub type NaiveDate = chrono::NaiveDate;
+			pub type NaiveTime = chrono::NaiveTime;
 		} else {
-			pub type DateTimeAlias = gel_protocol::model::Datetime;
-			pub type LocalDatetimeAlias = gel_protocol::model::LocalDatetime;
-			pub type LocalTimeAlias = gel_protocol::model::LocalTime;
-			pub type LocalDateAlias = gel_protocol::model::LocalDate;
+			pub type DateTime = gel_protocol::model::Datetime;
+			pub type NaiveDateTime = gel_protocol::model::LocalDatetime;
+			pub type NaiveDate = gel_protocol::model::LocalTime;
+			pub type NaiveTime = gel_protocol::model::LocalDate;
 		}
 	}
 

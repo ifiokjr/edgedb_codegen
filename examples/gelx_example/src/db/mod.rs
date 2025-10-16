@@ -350,8 +350,8 @@ pub mod select_accounts {
     pub struct OutputUser {
         pub slug: String,
         pub id: __g::uuid::Uuid,
-        pub created_at: __g::DateTimeAlias,
-        pub updated_at: __g::DateTimeAlias,
+        pub created_at: __g::DateTime,
+        pub updated_at: __g::DateTime,
         pub bio: Option<String>,
         pub name: Option<String>,
     }
@@ -364,14 +364,14 @@ pub mod select_accounts {
     #[cfg_attr(feature = "with_query", gel(crate_path = __g::gel_protocol))]
     pub struct Output {
         pub access_token: Option<String>,
-        pub access_token_expires_at: Option<__g::DateTimeAlias>,
-        pub created_at: __g::DateTimeAlias,
+        pub access_token_expires_at: Option<__g::DateTime>,
+        pub created_at: __g::DateTime,
         pub id: __g::uuid::Uuid,
-        pub updated_at: __g::DateTimeAlias,
+        pub updated_at: __g::DateTime,
         pub provider: super::default::AccountProvider,
         pub provider_account_id: String,
         pub refresh_token: Option<String>,
-        pub refresh_token_expires_at: Option<__g::DateTimeAlias>,
+        pub refresh_token_expires_at: Option<__g::DateTime>,
         pub scope: Option<String>,
         pub username: Option<String>,
         pub user: OutputUser,

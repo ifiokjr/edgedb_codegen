@@ -13,7 +13,7 @@ pub mod example {
         conn.query_required_single(QUERY, &()).await
     }
     pub type Input = ();
-    pub type Output = __g::DateTimeAlias;
+    pub type Output = __g::DateTime;
     /// The original query string provided to the macro. Can be reused in your codebase.
     pub const QUERY: &str = "select <datetime>'1999-03-31T15:17:00Z'";
 }

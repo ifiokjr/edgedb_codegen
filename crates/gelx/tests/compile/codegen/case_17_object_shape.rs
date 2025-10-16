@@ -22,9 +22,9 @@ pub mod example {
     )]
     #[gel(crate_path = __g::gel_protocol)]
     pub struct OutputWalletsSet {
-        pub created_at: __g::DateTimeAlias,
+        pub created_at: __g::DateTime,
         pub id: __g::uuid::Uuid,
-        pub updated_at: __g::DateTimeAlias,
+        pub updated_at: __g::DateTime,
         pub primary: bool,
         pub description: Option<String>,
         pub name: Option<String>,
@@ -41,8 +41,8 @@ pub mod example {
     pub struct Output {
         pub slug: String,
         pub id: __g::uuid::Uuid,
-        pub created_at: __g::DateTimeAlias,
-        pub updated_at: __g::DateTimeAlias,
+        pub created_at: __g::DateTime,
+        pub updated_at: __g::DateTime,
         pub description: Option<String>,
         pub name: String,
         pub wallets: Vec<OutputWalletsSet>,
