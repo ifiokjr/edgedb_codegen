@@ -179,11 +179,11 @@ pub async fn run_transaction() -> GelxCoreResult<()> {
 				.bio("another bio of class")
 				.slug("test_transaction")
 				.build();
-			let result = insert_user::transaction(&mut tx, &insert_props).await?;
+			let result = insert_user::query(&mut tx, &insert_props).await?;
 
 			// cleanup
 			let remove_props = remove_user::Input::builder().id(result.id).build();
-			remove_user::transaction(&mut tx, &remove_props).await?;
+			remove_user::query(&mut tx, &remove_props).await?;
 
 			Ok(result)
 		}

@@ -55,16 +55,9 @@ pub mod auth_allowed_redirect_urls {
     /// Execute the desired query.
     #[cfg(feature = "with_query")]
     pub async fn query(
-        client: &__g::gel_tokio::Client,
+        client: impl __g::gel_tokio::QueryExecutor,
     ) -> ::core::result::Result<(), __g::gel_errors::Error> {
         client.execute(QUERY, &()).await
-    }
-    /// Compose the query as part of a larger transaction.
-    #[cfg(feature = "with_query")]
-    pub async fn transaction(
-        conn: &mut __g::gel_tokio::Transaction,
-    ) -> ::core::result::Result<(), __g::gel_errors::Error> {
-        conn.execute(QUERY, &()).await
     }
     pub type Input = ();
     pub type Output = ();
@@ -76,18 +69,10 @@ pub mod insert_location {
     /// Execute the desired query.
     #[cfg(feature = "with_query")]
     pub async fn query(
-        client: &__g::gel_tokio::Client,
+        client: impl __g::gel_tokio::QueryExecutor,
         props: &Input,
     ) -> ::core::result::Result<Output, __g::gel_errors::Error> {
         client.query_required_single(QUERY, props).await
-    }
-    /// Compose the query as part of a larger transaction.
-    #[cfg(feature = "with_query")]
-    pub async fn transaction(
-        conn: &mut __g::gel_tokio::Transaction,
-        props: &Input,
-    ) -> ::core::result::Result<Output, __g::gel_errors::Error> {
-        conn.query_required_single(QUERY, props).await
     }
     #[derive(::std::fmt::Debug, ::core::clone::Clone, __g::typed_builder::TypedBuilder)]
     #[cfg_attr(
@@ -133,18 +118,10 @@ pub mod insert_position {
     /// Execute the desired query.
     #[cfg(feature = "with_query")]
     pub async fn query(
-        client: &__g::gel_tokio::Client,
+        client: impl __g::gel_tokio::QueryExecutor,
         props: &Input,
     ) -> ::core::result::Result<Output, __g::gel_errors::Error> {
         client.query_required_single(QUERY, props).await
-    }
-    /// Compose the query as part of a larger transaction.
-    #[cfg(feature = "with_query")]
-    pub async fn transaction(
-        conn: &mut __g::gel_tokio::Transaction,
-        props: &Input,
-    ) -> ::core::result::Result<Output, __g::gel_errors::Error> {
-        conn.query_required_single(QUERY, props).await
     }
     #[derive(::std::fmt::Debug, ::core::clone::Clone, __g::typed_builder::TypedBuilder)]
     #[cfg_attr(
@@ -188,18 +165,10 @@ pub mod insert_user {
     /// Execute the desired query.
     #[cfg(feature = "with_query")]
     pub async fn query(
-        client: &__g::gel_tokio::Client,
+        client: impl __g::gel_tokio::QueryExecutor,
         props: &Input,
     ) -> ::core::result::Result<Output, __g::gel_errors::Error> {
         client.query_required_single(QUERY, props).await
-    }
-    /// Compose the query as part of a larger transaction.
-    #[cfg(feature = "with_query")]
-    pub async fn transaction(
-        conn: &mut __g::gel_tokio::Transaction,
-        props: &Input,
-    ) -> ::core::result::Result<Output, __g::gel_errors::Error> {
-        conn.query_required_single(QUERY, props).await
     }
     #[derive(::std::fmt::Debug, ::core::clone::Clone, __g::typed_builder::TypedBuilder)]
     #[cfg_attr(
@@ -250,18 +219,10 @@ pub mod remove_user {
     /// Execute the desired query.
     #[cfg(feature = "with_query")]
     pub async fn query(
-        client: &__g::gel_tokio::Client,
+        client: impl __g::gel_tokio::QueryExecutor,
         props: &Input,
     ) -> ::core::result::Result<Option<Output>, __g::gel_errors::Error> {
         client.query_single(QUERY, props).await
-    }
-    /// Compose the query as part of a larger transaction.
-    #[cfg(feature = "with_query")]
-    pub async fn transaction(
-        conn: &mut __g::gel_tokio::Transaction,
-        props: &Input,
-    ) -> ::core::result::Result<Option<Output>, __g::gel_errors::Error> {
-        conn.query_single(QUERY, props).await
     }
     #[derive(::std::fmt::Debug, ::core::clone::Clone, __g::typed_builder::TypedBuilder)]
     #[cfg_attr(
@@ -304,18 +265,10 @@ pub mod select_accounts {
     /// Execute the desired query.
     #[cfg(feature = "with_query")]
     pub async fn query(
-        client: &__g::gel_tokio::Client,
+        client: impl __g::gel_tokio::QueryExecutor,
         props: &Input,
     ) -> ::core::result::Result<Vec<Output>, __g::gel_errors::Error> {
         client.query(QUERY, props).await
-    }
-    /// Compose the query as part of a larger transaction.
-    #[cfg(feature = "with_query")]
-    pub async fn transaction(
-        conn: &mut __g::gel_tokio::Transaction,
-        props: &Input,
-    ) -> ::core::result::Result<Vec<Output>, __g::gel_errors::Error> {
-        conn.query(QUERY, props).await
     }
     #[derive(::std::fmt::Debug, ::core::clone::Clone, __g::typed_builder::TypedBuilder)]
     #[cfg_attr(
@@ -384,18 +337,10 @@ pub mod select_test_user {
     /// Execute the desired query.
     #[cfg(feature = "with_query")]
     pub async fn query(
-        client: &__g::gel_tokio::Client,
+        client: impl __g::gel_tokio::QueryExecutor,
         props: &Input,
     ) -> ::core::result::Result<Option<Output>, __g::gel_errors::Error> {
         client.query_single(QUERY, props).await
-    }
-    /// Compose the query as part of a larger transaction.
-    #[cfg(feature = "with_query")]
-    pub async fn transaction(
-        conn: &mut __g::gel_tokio::Transaction,
-        props: &Input,
-    ) -> ::core::result::Result<Option<Output>, __g::gel_errors::Error> {
-        conn.query_single(QUERY, props).await
     }
     #[derive(::std::fmt::Debug, ::core::clone::Clone, __g::typed_builder::TypedBuilder)]
     #[cfg_attr(
@@ -439,18 +384,10 @@ pub mod select_user {
     /// Execute the desired query.
     #[cfg(feature = "with_query")]
     pub async fn query(
-        client: &__g::gel_tokio::Client,
+        client: impl __g::gel_tokio::QueryExecutor,
         props: &Input,
     ) -> ::core::result::Result<Option<Output>, __g::gel_errors::Error> {
         client.query_single(QUERY, props).await
-    }
-    /// Compose the query as part of a larger transaction.
-    #[cfg(feature = "with_query")]
-    pub async fn transaction(
-        conn: &mut __g::gel_tokio::Transaction,
-        props: &Input,
-    ) -> ::core::result::Result<Option<Output>, __g::gel_errors::Error> {
-        conn.query_single(QUERY, props).await
     }
     #[derive(::std::fmt::Debug, ::core::clone::Clone, __g::typed_builder::TypedBuilder)]
     #[cfg_attr(

@@ -95,9 +95,7 @@ pub fn generate_query_token_stream(
 	let props_ident = format_ident!("{PROPS_NAME}");
 
 	let query_ident = metadata.query_function_ident();
-	let transaction_ident = metadata.transaction_function_ident();
 	let query_prop_ident = format_ident!("{QUERY_PROP_NAME}");
-	let transaction_prop_ident = format_ident!("{TRANSACTION_PROP_NAME}");
 	let module_name: Ident = format_ident!("{}", name.to_snake_case());
 	let input = descriptor.input.decode()?;
 	let output = descriptor.output.decode()?;
@@ -135,9 +133,8 @@ pub fn generate_query_token_stream(
 	};
 	let exports_ident = metadata.exports_alias_ident();
 	let query_constant = metadata.query_constant_ident();
-	let mut query_props = vec![quote!(#query_prop_ident: &#exports_ident::gel_tokio::Client)];
-	let mut transaction_props =
-		vec![quote!(#transaction_prop_ident: &mut #exports_ident::gel_tokio::Transaction)];
+	let mut query_props =
+		vec![quote!(#query_prop_ident: impl #exports_ident::gel_tokio::QueryExecutor)];
 	let args = vec![
 		quote!(#query_constant),
 		input.root().map_or(quote!(&()), |_| quote!(#props_ident)),
@@ -147,7 +144,6 @@ pub fn generate_query_token_stream(
 
 	if input.root().is_some() {
 		query_props.push(quote!(#props_ident: &#input_ident));
-		transaction_props.push(quote!(#props_ident: &#input_ident));
 	}
 
 	let query_annotation = metadata.features.annotate(FeatureName::Query, is_macro);
@@ -160,12 +156,6 @@ pub fn generate_query_token_stream(
 			#query_annotation
 			pub async fn #query_ident(#(#query_props),*) -> ::core::result::Result<#returns, #exports_ident::gel_errors::Error> {
 				#query_prop_ident.#query_method(#(#args),*).await
-			}
-
-			/// Compose the query as part of a larger transaction.
-			#query_annotation
-			pub async fn #transaction_ident(#(#transaction_props),*) -> ::core::result::Result<#returns, #exports_ident::gel_errors::Error> {
-				#transaction_prop_ident.#query_method(#(#args),*).await
 			}
 
 			#tokens

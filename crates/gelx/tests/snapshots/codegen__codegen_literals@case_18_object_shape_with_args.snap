@@ -6,17 +6,10 @@ pub mod example {
     use ::gelx::exports as __g;
     /// Execute the desired query.
     pub async fn query(
-        client: &__g::gel_tokio::Client,
+        client: impl __g::gel_tokio::QueryExecutor,
         props: &Input,
     ) -> ::core::result::Result<Vec<Output>, __g::gel_errors::Error> {
         client.query(QUERY, props).await
-    }
-    /// Compose the query as part of a larger transaction.
-    pub async fn transaction(
-        conn: &mut __g::gel_tokio::Transaction,
-        props: &Input,
-    ) -> ::core::result::Result<Vec<Output>, __g::gel_errors::Error> {
-        conn.query(QUERY, props).await
     }
     #[derive(::std::fmt::Debug, ::core::clone::Clone)]
     pub struct Input {

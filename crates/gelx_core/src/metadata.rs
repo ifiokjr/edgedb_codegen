@@ -55,9 +55,6 @@ pub struct GelxMetadata {
 	#[builder(default = default_query_function_name())]
 	#[serde(default = "default_query_function_name")]
 	pub query_function_name: String,
-	#[builder(default = default_transaction_function_name())]
-	#[serde(default = "default_transaction_function_name")]
-	pub transaction_function_name: String,
 	#[builder(default = default_query_constant_name())]
 	#[serde(default = "default_query_constant_name")]
 	pub query_constant_name: String,
@@ -193,9 +190,6 @@ impl GelxMetadata {
 		format_ident!("{}", self.query_function_name)
 	}
 
-	pub fn transaction_function_ident(&self) -> Ident {
-		format_ident!("{}", self.transaction_function_name)
-	}
 
 	pub fn exports_alias_ident(&self) -> Ident {
 		format_ident!("{}", self.exports_alias)
@@ -258,10 +252,6 @@ fn default_output_struct_name() -> String {
 
 fn default_query_function_name() -> String {
 	"query".to_string()
-}
-
-fn default_transaction_function_name() -> String {
-	"transaction".to_string()
 }
 
 fn default_query_constant_name() -> String {
