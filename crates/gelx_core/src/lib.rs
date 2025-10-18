@@ -240,6 +240,47 @@ impl<'a> ExploreDescriptorProps<'a> {
 	}
 }
 
+#[derive(Default)]
+pub struct ExploreResult {
+	pub token: Option<TokenStream>,
+	pub conversion: ConvertionKind,
+}
+impl ExploreResult {
+	pub fn map<F>(self, f: F) -> Self
+	where
+		F: FnOnce(TokenStream) -> TokenStream,
+	{
+		Self {
+			token: self.token.map(f),
+			..self
+		}
+	}
+}
+impl From<MappedRustType> for ExploreResult {
+	fn from(value: MappedRustType) -> Self {
+		Self {
+			token: Some(value.token),
+			conversion: value.convertion_kind,
+		}
+	}
+}
+impl From<TokenStream> for ExploreResult {
+	fn from(value: TokenStream) -> Self {
+		Self {
+			token: Some(value),
+			conversion: ConvertionKind::Infailable,
+		}
+	}
+}
+impl From<Option<TokenStream>> for ExploreResult {
+	fn from(value: Option<TokenStream>) -> Self {
+		Self {
+			token: value,
+			conversion: ConvertionKind::Infailable,
+		}
+	}
+}
+
 fn explore_descriptor(
 	props @ ExploreDescriptorProps {
 		typedesc,
@@ -251,7 +292,7 @@ fn explore_descriptor(
 		is_macro,
 	}: ExploreDescriptorProps,
 	tokens: &mut TokenStream,
-) -> GelxCoreResult<Option<TokenStream>> {
+) -> GelxCoreResult<ExploreResult> {
 	let root_ident = format_ident!("{root_name}");
 	let exports_ident = metadata.exports_alias_ident();
 	let Some(descriptor) = descriptor else {
@@ -259,7 +300,7 @@ fn explore_descriptor(
 			tokens.extend(quote!(pub type #root_ident = ();));
 		}
 
-		return Ok(None);
+		return Ok(ExploreResult::default());
 	};
 
 	match descriptor {
@@ -271,11 +312,15 @@ fn explore_descriptor(
 				.descriptor(set_descriptor)
 				.root_name(&sub_root_name)
 				.build();
-			let result = explore_descriptor(props, tokens)?.map(|result| quote!(Vec<#result>));
+			let result = explore_descriptor(props, tokens)?.map(|result: TokenStream| quote!(Vec<#result>));
 
 			if is_root {
-				tokens.extend(quote!(pub type #root_ident = #result;));
-				Ok(Some(quote!(#root_ident)))
+				let result_tokens = result.token;
+				tokens.extend(quote!(pub type #root_ident = #result_tokens;));
+				Ok(ExploreResult {
+					token: Some(quote!(#root_ident)),
+					conversion: result.conversion,
+				})
 			} else {
 				Ok(result)
 			}
@@ -292,37 +337,48 @@ fn explore_descriptor(
 				tokens,
 			)?;
 
-			Ok(result)
+			Ok(ExploreResult {
+				token: result,
+				..Default::default()
+			})
 		}
 
 		Descriptor::BaseScalar(base_scalar) => {
-			let result = uuid_to_token_name(&base_scalar.id, &exports_ident);
+			let mut result = uuid_to_token_name(&base_scalar.id, &exports_ident).into();
 
-			if is_root {
-				tokens.extend(quote!(pub type #root_ident = #result;));
-				Ok(Some(quote!(#root_ident)))
-			} else {
-				Ok(Some(result))
+			let ExploreResult { token, .. } = &mut result;
+
+			match is_root {
+				true => {
+					tokens.extend(quote!(pub type #root_ident = #token;));
+					*token = Some(quote!(#root_ident));
+					Ok(result)
+				}
+				false => Ok(result),
 			}
 		}
 
 		Descriptor::Scalar(scalar) => {
 			let Some(module_name) = &scalar.name.as_ref().map(ModuleName::from) else {
-				return Ok(None); // should not happen
+				return Ok(ExploreResult::default()); // should not happen
 			};
 
 			if module_name.is_system_namespace() {
-				let result = uuid_to_token_name(&scalar.id, &exports_ident);
+				let mut result = uuid_to_token_name(&scalar.id, &exports_ident).into();
 
-				if is_root {
-					tokens.extend(quote!(pub type #root_ident = #result;));
-					Ok(Some(quote!(#root_ident)))
-				} else {
-					Ok(Some(result))
+				let ExploreResult { token, .. } = &mut result;
+
+				match is_root {
+					true => {
+						tokens.extend(quote!(pub type #root_ident = #token;));
+						*token = Some(quote!(#root_ident));
+						Ok(result)
+					}
+					false => Ok(result),
 				}
 			} else if is_macro {
 				let Some(base_type_pos) = scalar.base_type_pos else {
-					return Ok(None); // should not happen
+					return Ok(ExploreResult::default()); // should not happen
 				};
 
 				let props = props
@@ -336,7 +392,10 @@ fn explore_descriptor(
 				let module_ident = module_name.modules_path()?;
 				let enum_ident = module_name.name_ident(false);
 
-				Ok(Some(quote!(super::#module_ident::#enum_ident)))
+				Ok(ExploreResult {
+					token: Some(quote!(super::#module_ident::#enum_ident)),
+					..Default::default()
+				})
 			}
 		}
 
@@ -356,16 +415,20 @@ fn explore_descriptor(
 					tokens,
 				)?;
 
-				tuple_tokens.push(result);
+				tuple_tokens.push(result.token);
 			}
 
-			let result = quote!((#tuple_tokens));
+			let mut result = quote!((#tuple_tokens )).into();
 
-			if is_root {
-				tokens.extend(quote!(pub type #root_ident = #result;));
-				Ok(Some(quote!(#root_ident)))
-			} else {
-				Ok(Some(result))
+			let ExploreResult { token, .. } = &mut result;
+
+			match is_root {
+				true => {
+					tokens.extend(quote!(pub type #root_ident = #token;));
+					*token = Some(quote!(#root_ident));
+					Ok(result)
+				}
+				false => Ok(result),
 			}
 		}
 
@@ -380,7 +443,7 @@ fn explore_descriptor(
 				tokens,
 			)?;
 
-			Ok(result)
+			Ok(result.into())
 		}
 
 		Descriptor::Array(array) => {
@@ -391,26 +454,31 @@ fn explore_descriptor(
 				.descriptor(array_descriptor)
 				.root_name(&sub_root_name)
 				.build();
-			let result = explore_descriptor(props, tokens)?.map(|result| quote!(Vec<#result>));
 
-			if is_root {
-				tokens.extend(quote!(pub type #root_ident = #result;));
-				Ok(Some(quote!(#root_ident)))
-			} else {
-				Ok(result)
+			let mut result = explore_descriptor(props, tokens)?.map(|result| quote!(Vec<#result>));
+
+			let ExploreResult { token, .. } = &mut result;
+
+			match is_root {
+				true => {
+					tokens.extend(quote!(pub type #root_ident = #token;));
+					*token = Some(quote!(#root_ident));
+					Ok(result)
+				}
+				false => Ok(result),
 			}
 		}
 
 		Descriptor::Enumeration(enumeration) => {
 			// TODO: support ephemeral enums not defined in the schema
-			let result = if is_macro {
+			let mut result = if is_macro {
 				// Inline the enum in the macro output.
 				explore_enumeration_descriptor(enumeration, metadata, tokens, is_macro)
 			} else {
 				// Otherwise reference the enum from the generated module which this is a part
 				// of.
 				let Some(name) = &enumeration.name else {
-					return Ok(Some(quote!(String)));
+					return Ok(quote!(String).into());
 				};
 
 				let module_name: ModuleName = name.into();
@@ -418,13 +486,18 @@ fn explore_descriptor(
 				let enum_ident = module_name.name_ident(false);
 
 				quote!(super::#module_ident::#enum_ident)
-			};
+			}
+			.into();
 
-			if is_root {
-				tokens.extend(quote!(pub type #root_ident = #result;));
-				Ok(Some(quote!(#root_ident)))
-			} else {
-				Ok(Some(result))
+			let ExploreResult { token, .. } = &mut result;
+
+			match is_root {
+				true => {
+					tokens.extend(quote!(pub type #root_ident = #token;));
+					*token = Some(quote!(#root_ident));
+					Ok(result)
+				}
+				false => Ok(result),
 			}
 		}
 
@@ -439,7 +512,7 @@ fn explore_descriptor(
 				tokens,
 			)?;
 
-			Ok(result)
+			Ok(result.into())
 		}
 
 		Descriptor::Range(range) => {
@@ -450,14 +523,19 @@ fn explore_descriptor(
 				.descriptor(range_descriptor)
 				.root_name(&sub_root_name)
 				.build();
-			let result = explore_descriptor(props, tokens)?
+
+			let mut result = explore_descriptor(props, tokens)?
 				.map(|result| quote!(#exports_ident::gel_protocol::model::Range<#result>));
 
-			if is_root {
-				tokens.extend(quote!(pub type #root_ident = #result;));
-				Ok(Some(quote!(#root_ident)))
-			} else {
-				Ok(result)
+			let ExploreResult { token, .. } = &mut result;
+
+			match is_root {
+				true => {
+					tokens.extend(quote!(pub type #root_ident = #token;));
+					*token = Some(quote!(#root_ident));
+					Ok(result)
+				}
+				false => Ok(result),
 			}
 		}
 
@@ -519,7 +597,7 @@ fn explore_object_shape_descriptor(
 			.is_macro_bool(is_macro)
 			.build();
 		let output = explore_descriptor(sub_props, tokens)?;
-		let output_token = element.wrap(&output);
+		let output_token = element.wrap(&output.token);
 		let serde_annotation = (&safe_name != name).then_some(metadata.features.wrap_annotation(
 			FeatureName::Serde,
 			&quote!(serde(rename = #name)),
@@ -557,7 +635,21 @@ fn explore_object_shape_descriptor(
 		});
 
 		if is_input {
-			impl_named_args.push(quote!(#name => self.#safe_name_ident.clone(),));
+			match output.conversion {
+				ConvertionKind::Fallible { target_token } => {
+					impl_named_args.push(quote! {
+						#name => {
+							let value: #target_token = self.#safe_name_ident.clone().try_into().map_err(|e| {
+								<#exports_ident::gel_errors::kinds::NumericOutOfRangeError as #exports_ident::gel_errors::ErrorKind>::build()
+							})?;
+							value
+						},
+					});
+				}
+				_ => {
+					impl_named_args.push(quote!(#name => self.#safe_name_ident.clone(),));
+				}
+			}
 		}
 	}
 

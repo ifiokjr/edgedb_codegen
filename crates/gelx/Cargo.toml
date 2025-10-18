@@ -22,21 +22,33 @@ bigdecimal = { workspace = true, default-features = true, optional = true }
 bytes = { workspace = true, default-features = true }
 cfg-if = { workspace = true, default-features = true }
 chrono = { workspace = true, default-features = true, optional = true }
-derive_more = { workspace = true, default-features = true, features = ["from", "into", "deref", "deref_mut"] }
+derive_more = { workspace = true, default-features = true, features = [
+	"from",
+	"into",
+	"deref",
+	"deref_mut",
+] }
 document-features = { workspace = true, default-features = true }
 gel-derive = { workspace = true, default-features = true, optional = true }
 gel-errors = { workspace = true, default-features = true }
 gel-protocol = { workspace = true, default-features = true }
-gel-tokio = { workspace = true, default-features = true, features = ["unstable", "derive"], optional = true }
+gel-tokio = { workspace = true, default-features = true, features = [
+	"unstable",
+	"derive",
+], optional = true }
 gelx_macros = { workspace = true, default-features = true }
 geo = { workspace = true, default-features = true, optional = true }
 geo-traits = { workspace = true, default-features = true, optional = true }
 geo-types = { workspace = true, default-features = true, optional = true }
 num-bigint = { workspace = true, default-features = true, optional = true }
 num-traits = { workspace = true, default-features = true, optional = true }
-serde = { workspace = true, default-features = true, features = ["derive"], optional = true }
+serde = { workspace = true, default-features = true, features = [
+	"derive",
+], optional = true }
 serde_bytes = { workspace = true, default-features = true, optional = true }
-strum = { workspace = true, default-features = true, features = ["derive"], optional = true }
+strum = { workspace = true, default-features = true, features = [
+	"derive",
+], optional = true }
 typed-builder = { workspace = true, default-features = true, optional = true }
 uuid = { workspace = true, default-features = true }
 wkb = { workspace = true, default-features = true, optional = true }
@@ -44,23 +56,31 @@ wkb = { workspace = true, default-features = true, optional = true }
 [dev-dependencies]
 assert2 = { workspace = true, default-features = true }
 gelx_core = { workspace = true, default-features = true }
-insta = { workspace = true, default-features = true, features = ["ron", "json", "redactions", "filters"] }
+insta = { workspace = true, default-features = true, features = [
+	"ron",
+	"json",
+	"redactions",
+	"filters",
+] }
 proc-macro2 = { workspace = true, default-features = true }
 rstest = { workspace = true, default-features = true }
 rustversion = { workspace = true, default-features = true }
-test-log = { workspace = true, default-features = true, features = ["log", "trace"] }
-tokio = { workspace = true, default-features = true, features = ["time", "test-util", "fs"] }
+test-log = { workspace = true, default-features = true, features = [
+	"log",
+	"trace",
+] }
+tokio = { workspace = true, default-features = true, features = [
+	"time",
+	"test-util",
+	"fs",
+] }
 trybuild = { workspace = true, default-features = true }
 
 [features]
 # ! #### Default
 
 ## The default feature is `with_all`.
-default = [
-	"with_all",
-	"builder",
-	"strum",
-]
+default = ["with_all", "builder", "strum"]
 
 # ! #### Types
 
@@ -69,6 +89,7 @@ with_bigint = [
 	"dep:num-bigint",
 	"dep:num-traits",
 	"gel-protocol/with-num-bigint",
+	"gelx_core/with_bigint",
 ]
 
 ## Use the `bigdecimal` crate.
@@ -77,21 +98,18 @@ with_bigdecimal = [
 	"dep:num-bigint",
 	"dep:num-traits",
 	"gel-protocol/with-bigdecimal",
+	"gelx_core/with_bigdecimal",
 ]
 
 ## Use the `chrono` crate for all dates.
 with_chrono = [
 	"dep:chrono",
 	"gel-protocol/with-chrono",
+	"gelx_core/with_chrono",
 ]
 
 ## Use the `geo-types` crate for all geo types.
-with_geo = [
-	"dep:geo-traits",
-	"dep:geo-types",
-	"dep:geo",
-	"dep:wkb",
-]
+with_geo = ["dep:geo-traits", "dep:geo-types", "dep:geo", "dep:wkb"]
 
 ## Include all additional types. This is included by default. Use `default-features = false` to disable.
 with_all = [
@@ -105,10 +123,7 @@ with_all = [
 # ! #### Behavior
 
 ## Use the `typed-builder` crate to generate the builders for the generated `Input` structs.
-builder = [
-	"dep:typed-builder",
-	"gelx_macros/builder",
-]
+builder = ["dep:typed-builder", "gelx_macros/builder"]
 
 ## Turn on the `query` and `transaction` methods and anything that relies on `gel-tokio`.
 ## The reason to separate this feature is to enable usage of this macro in browser environments
@@ -141,10 +156,7 @@ serde = [
 ## Enable strum for the generated code.
 ##
 ## Adding this feature requires adding the `strum` dependency to your project.
-strum = [
-	"gelx_macros/strum",
-	"dep:strum",
-]
+strum = ["gelx_macros/strum", "dep:strum"]
 
 [lints]
 workspace = true

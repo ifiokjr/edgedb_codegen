@@ -28,7 +28,7 @@
   scripts."gelx" = {
     exec = ''
       set -e
-      cargo run --package gelx_cli --bin gelx -- $@
+      cargo run --package gelx_cli --bin gelx -F with_bigdecimal -- $@
     '';
     description = "Install all dependencies.";
   };

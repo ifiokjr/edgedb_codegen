@@ -33,6 +33,23 @@ module default {
 		required position: Position;
 	}
 
+  type Transaction extending CreatedAt, UpdatedAt {
+    required tx_hash: str {
+      constraint exclusive;
+    }
+    required from_wallet: Wallet {
+      on target delete restrict;
+    }
+    required to_wallet: Wallet {
+      on target delete restrict;
+    }
+    required amount: decimal;
+    required confirmed: bool {
+      default := false;
+    }
+    confirmed_at: datetime;
+  }
+
 	type Location extending CreatedAt, UpdatedAt {
 		required point: ext::postgis::geometry;
 		required area: ext::postgis::geography;

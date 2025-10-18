@@ -35,9 +35,76 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::Ident;
 
-pub(crate) fn uuid_to_token_name(uuid: &Uuid, exports_ident: &Ident) -> TokenStream {
-	maybe_uuid_to_token_name(uuid, exports_ident)
-		.unwrap_or(quote!(#exports_ident::gel_protocol::value::Value))
+pub(crate) fn uuid_to_token_name(uuid: &Uuid, exports_ident: &Ident) -> MappedRustType {
+	MappedRustType::new(uuid, exports_ident).unwrap_or(MappedRustType {
+		token: quote!(#exports_ident::gel_protocol::value::Value),
+		import: None,
+		convertion_kind: ConvertionKind::Infailable,
+	})
+}
+
+#[derive(Default)]
+pub enum ConvertionKind {
+	#[default]
+	Infailable,
+	Fallible {
+		target_token: TokenStream,
+	},
+}
+
+pub struct MappedRustType {
+	pub token: TokenStream,
+	pub import: Option<TokenStream>,
+	pub convertion_kind: ConvertionKind,
+}
+
+impl MappedRustType {
+	pub fn new(uuid: &Uuid, exports_ident: &Ident) -> Option<MappedRustType> {
+		const IS_CHRONO: bool = cfg!(feature = "with_chrono");
+
+		let token_name = maybe_uuid_to_token_name(uuid, exports_ident)?;
+		let import = maybe_uuid_to_import(uuid, exports_ident);
+
+		let is_fallible = match *uuid {
+			STD_DECIMAL if cfg!(feature = "with_bigdecimal") => {
+				ConvertionKind::Fallible {
+					target_token: quote!(#exports_ident::gel_protocol::model::Decimal),
+				}
+			}
+			STD_BIGINT if cfg!(feature = "with_bigint") => {
+				ConvertionKind::Fallible {
+					target_token: quote!(#exports_ident::gel_protocol::model::BigInt),
+				}
+			}
+			STD_DATETIME | STD_PG_TIMESTAMPTZ if IS_CHRONO => {
+				ConvertionKind::Fallible {
+					target_token: quote!(#exports_ident::gel_protocol::model::DateTime),
+				}
+			}
+			CAL_LOCAL_DATETIME | STD_PG_TIMESTAMP if IS_CHRONO => {
+				ConvertionKind::Fallible {
+					target_token: quote!(#exports_ident::gel_protocol::model::LocalDatetime),
+				}
+			}
+			CAL_LOCAL_DATE | STD_PG_DATE if IS_CHRONO => {
+				ConvertionKind::Fallible {
+					target_token: quote!(#exports_ident::gel_protocol::model::LocalDate),
+				}
+			}
+			CAL_LOCAL_TIME => {
+				ConvertionKind::Fallible {
+					target_token: quote!(#exports_ident::gel_protocol::model::LocalTime),
+				}
+			}
+
+			_ => ConvertionKind::Infailable,
+		};
+		Some(MappedRustType {
+			token: token_name,
+			import,
+			convertion_kind: is_fallible,
+		})
+	}
 }
 
 pub(crate) fn maybe_uuid_to_token_name(uuid: &Uuid, exports_ident: &Ident) -> Option<TokenStream> {

@@ -4,6 +4,7 @@ pub use db::*;
 
 #[cfg(test)]
 mod tests {
+	use gelx::exports::bigdecimal::BigDecimal;
 	use gelx::exports::uuid::Uuid;
 
 	use super::*;
@@ -61,6 +62,21 @@ mod tests {
 			.username("custom")
 			.build();
 		select_test_user::query(&client, &props).await?;
+		Ok(())
+	}
+
+	#[tokio::test]
+	async fn test_select_transactions_query() -> anyhow::Result<()> {
+		let client = Globals::builder()
+			.current_user_id(Uuid::max())
+			.alternative("test")
+			.build()
+			.into_client()
+			.await?;
+		let props = select_transactions::Input::builder()
+			.amount(BigDecimal::from(0))
+			.build();
+		select_transactions::query(&client, &props).await?;
 		Ok(())
 	}
 }

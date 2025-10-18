@@ -1,4 +1,4 @@
-CREATE MIGRATION m1p3cdncbbuklymorof33l2snlig7ytag6vyt7e3sm3xp2ygiia2gq
+CREATE MIGRATION m1um4wm63tnxpyoegj5xhc6g5vkx2ku7asngljpqdbehql7gyyl45q
     ONTO initial
 {
   CREATE EXTENSION pgcrypto VERSION '1.3';
@@ -139,6 +139,22 @@ CREATE MIGRATION m1p3cdncbbuklymorof33l2snlig7ytag6vyt7e3sm3xp2ygiia2gq
   CREATE TYPE default::Location EXTENDING default::CreatedAt, default::UpdatedAt {
       CREATE REQUIRED PROPERTY area: ext::postgis::geography;
       CREATE REQUIRED PROPERTY point: ext::postgis::geometry;
+  };
+  CREATE TYPE default::Transaction EXTENDING default::CreatedAt, default::UpdatedAt {
+      CREATE REQUIRED LINK from_wallet: default::Wallet {
+          ON TARGET DELETE RESTRICT;
+      };
+      CREATE REQUIRED LINK to_wallet: default::Wallet {
+          ON TARGET DELETE RESTRICT;
+      };
+      CREATE REQUIRED PROPERTY amount: std::decimal;
+      CREATE REQUIRED PROPERTY confirmed: std::bool {
+          SET default := false;
+      };
+      CREATE PROPERTY confirmed_at: std::datetime;
+      CREATE REQUIRED PROPERTY tx_hash: std::str {
+          CREATE CONSTRAINT std::exclusive;
+      };
   };
   ALTER TYPE default::User {
       CREATE LINK emails := (.<user[IS default::Email]);

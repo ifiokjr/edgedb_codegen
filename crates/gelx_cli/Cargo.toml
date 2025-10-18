@@ -32,6 +32,21 @@ toml = { workspace = true, default-features = true }
 insta = { workspace = true, default-features = true }
 insta-cmd = { workspace = true, default-features = true }
 
+[features]
+default = ["with_bigint", "with_bigdecimal", "with_chrono"]
+
+with_bigint = [
+	"gelx_core/with_bigint",
+]
+
+with_bigdecimal = [
+	"gelx_core/with_bigdecimal",
+]
+
+with_chrono = [
+	"gelx_core/with_chrono",
+]
+
 [lints]
 workspace = true
 

@@ -335,6 +335,9 @@ mod team {
 mod test_user {
     use super::*;
 }
+mod transaction {
+    use super::*;
+}
 mod user {
     use super::*;
 }

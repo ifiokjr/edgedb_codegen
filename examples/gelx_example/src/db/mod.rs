@@ -434,6 +434,69 @@ pub mod select_test_user {
     /// The original query string provided to the macro. Can be reused in your codebase.
     pub const QUERY: &str = "select assert_single((\n\tselect TestUser { id, public_id } filter .active and .namelc = str_lower(<str>$username)\n))\n";
 }
+pub mod select_transactions {
+    use ::gelx::exports as __g;
+    /// Execute the desired query.
+    #[cfg(feature = "with_query")]
+    pub async fn query(
+        client: &__g::gel_tokio::Client,
+        props: &Input,
+    ) -> ::core::result::Result<Vec<Output>, __g::gel_errors::Error> {
+        client.query(QUERY, props).await
+    }
+    /// Compose the query as part of a larger transaction.
+    #[cfg(feature = "with_query")]
+    pub async fn transaction(
+        conn: &mut __g::gel_tokio::Transaction,
+        props: &Input,
+    ) -> ::core::result::Result<Vec<Output>, __g::gel_errors::Error> {
+        conn.query(QUERY, props).await
+    }
+    #[derive(::std::fmt::Debug, ::core::clone::Clone, __g::typed_builder::TypedBuilder)]
+    #[cfg_attr(
+        feature = "with_serde",
+        derive(__g::serde::Serialize, __g::serde::Deserialize)
+    )]
+    #[cfg_attr(feature = "with_query", derive(__g::gel_derive::Queryable))]
+    #[builder(crate_module_path = __g::typed_builder)]
+    #[cfg_attr(feature = "with_query", gel(crate_path = __g::gel_protocol))]
+    pub struct Input {
+        #[builder(setter(into))]
+        pub amount: __g::DecimalAlias,
+    }
+    impl __g::gel_protocol::query_arg::QueryArgs for Input {
+        fn encode(
+            &self,
+            encoder: &mut __g::gel_protocol::query_arg::Encoder,
+        ) -> core::result::Result<(), __g::gel_errors::Error> {
+            let map = __g::gel_protocol::named_args! {
+                "amount" => { let value : __g::gel_protocol::model::Decimal = self.amount
+                .clone().try_into().map_err(| e | { <
+                __g::gel_errors::kinds::NumericOutOfRangeError as
+                __g::gel_errors::ErrorKind > ::build() }) ?; value },
+            };
+            map.encode(encoder)
+        }
+    }
+    #[derive(::std::fmt::Debug, ::core::clone::Clone)]
+    #[cfg_attr(
+        feature = "with_serde",
+        derive(__g::serde::Serialize, __g::serde::Deserialize)
+    )]
+    #[cfg_attr(feature = "with_query", derive(__g::gel_derive::Queryable))]
+    #[cfg_attr(feature = "with_query", gel(crate_path = __g::gel_protocol))]
+    pub struct Output {
+        pub created_at: __g::DateTimeAlias,
+        pub id: __g::uuid::Uuid,
+        pub updated_at: __g::DateTimeAlias,
+        pub amount: __g::DecimalAlias,
+        pub confirmed: bool,
+        pub confirmed_at: Option<__g::DateTimeAlias>,
+        pub tx_hash: String,
+    }
+    /// The original query string provided to the macro. Can be reused in your codebase.
+    pub const QUERY: &str = "select Transaction {\n    *\n} filter .amount = <decimal>$amount;";
+}
 pub mod select_user {
     use ::gelx::exports as __g;
     /// Execute the desired query.

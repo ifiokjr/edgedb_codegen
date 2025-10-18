@@ -1,0 +1,46 @@
+---
+source: crates/gelx/tests/codegen.rs
+expression: "&content"
+---
+pub mod example {
+    use ::gelx::exports as __g;
+    /// Execute the desired query.
+    pub async fn query(
+        client: &__g::gel_tokio::Client,
+        props: &Input,
+    ) -> ::core::result::Result<Vec<Output>, __g::gel_errors::Error> {
+        client.query(QUERY, props).await
+    }
+    /// Compose the query as part of a larger transaction.
+    pub async fn transaction(
+        conn: &mut __g::gel_tokio::Transaction,
+        props: &Input,
+    ) -> ::core::result::Result<Vec<Output>, __g::gel_errors::Error> {
+        conn.query(QUERY, props).await
+    }
+    #[derive(::std::fmt::Debug, ::core::clone::Clone)]
+    pub struct Input {
+        pub timestamp: __g::DateTimeAlias,
+    }
+    impl __g::gel_protocol::query_arg::QueryArgs for Input {
+        fn encode(
+            &self,
+            encoder: &mut __g::gel_protocol::query_arg::Encoder,
+        ) -> core::result::Result<(), __g::gel_errors::Error> {
+            let map = __g::gel_protocol::named_args! {
+                "timestamp" => { let value : __g::gel_protocol::model::DateTime = self
+                .timestamp.clone().try_into().map_err(| e | { <
+                __g::gel_errors::kinds::NumericOutOfRangeError as
+                __g::gel_errors::ErrorKind > ::build() }) ?; value },
+            };
+            map.encode(encoder)
+        }
+    }
+    #[derive(::std::fmt::Debug, ::core::clone::Clone)]
+    pub struct Output {
+        pub id: __g::uuid::Uuid,
+        pub created_at: __g::DateTimeAlias,
+    }
+    /// The original query string provided to the macro. Can be reused in your codebase.
+    pub const QUERY: &str = "select CreatedAt {*} filter .created_at = <datetime>$timestamp;";
+}
